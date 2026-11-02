@@ -1,0 +1,100 @@
+{% from "macros/ui.html" import badge, photo, detail %}
+<div class="p-5 border-b border-gray-200 flex items-start justify-between gap-3">
+  <div class="flex items-center gap-3">
+    {{ photo(asset, 'size-14') }}
+    <div>
+      <h2 id="modal-title" class="text-lg font-semibold text-gray-900">{{ asset.asset_tag_id }}</h2>
+      <p class="text-sm text-gray-500">{{ asset.description }}</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    {{ badge(asset.status) }}
+    <button type="button" data-hs-overlay="#app-modal" class="size-8 inline-flex justify-center items-center rounded-full text-gray-500 hover:bg-gray-100" aria-label="Close">
+      <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="p-5 space-y-6 max-h-[70vh] overflow-y-auto">
+  <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    {{ detail('Brand', asset.brand) }}
+    {{ detail('Model', asset.model) }}
+    {{ detail('Serial Number', asset.serial_number) }}
+    {{ detail('Type', asset_type_labels.get(asset.asset_type, asset.asset_type)) }}
+    {{ detail('OS', asset.os) }}
+    {{ detail('OS Version', asset.os_version) }}
+    {{ detail('Processor', asset.processor) }}
+    {{ detail('Memory', asset.memory) }}
+    {{ detail('Hard Disk', asset.hard_disk) }}
+    {{ detail('Purchase Date', asset.purchase_date|d) }}
+    {{ detail('Warranty Expiry', asset.warranty_expiry|d) }}
+    {{ detail('Department', asset.department) }}
+    {{ detail('Location', asset.current_location.name if asset.current_location else None) }}
+    {{ detail('Last Check-In Date', last_checkin|d) }}
+    {{ detail('Last Used By', asset.last_used_by) }}
+    <div>
+      <dt class="text-xs uppercase tracking-wide text-gray-500">Last Password</dt>
+      <dd class="mt-0.5 text-sm">{% include "assets/_password.html" %}</dd>
+    </div>
+  </dl>
+
+  {% if assignment %}
+  <section>
+    <h3 class="text-sm font-semibold text-gray-900 mb-2">Current assignment</h3>
+    <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4 rounded-lg bg-amber-50 border border-amber-100 p-4">
+      {{ detail('Assigned To', employee.name) }}
+      {{ detail('Employee ID', employee.employee_code) }}
+      {{ detail('Mobile Number', employee.mobile) }}
+      {{ detail('Email Address', employee.email) }}
+      {{ detail('Location', location.name) }}
+      {{ detail('Department', assignment.department) }}
+      {{ detail('Check-Out Date', assignment.checkout_at|dt) }}
+      {{ detail('Event Notes', assignment.checkout_notes) }}
+    </dl>
+  </section>
+  {% endif %}
+
+  <section>
+    <h3 class="text-sm font-semibold text-gray-900 mb-2">Assignment history</h3>
+    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+      <table class="min-w-full text-xs divide-y divide-gray-200">
+        <thead class="bg-gray-50 text-gray-500 uppercase tracking-wide">
+          <tr>{% for h in ['Employee','Location','Department','Checked out','Checked in','Notes'] %}<th class="px-3 py-2 text-start font-medium whitespace-nowrap">{{ h }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for h in history %}
+          <tr>
+            <td class="px-3 py-2 whitespace-nowrap">{{ h.employee.name }} <span class="text-gray-400">({{ h.employee.employee_code }})</span></td>
+            <td class="px-3 py-2 whitespace-nowrap">{{ h.location.name }}</td>
+            <td class="px-3 py-2 whitespace-nowrap">{{ h.department }}</td>
+            <td class="px-3 py-2 whitespace-nowrap">{{ h.checkout_at|dt }}<br><span class="text-gray-400">{{ user_names.get(h.checked_out_by, '') }}</span></td>
+            <td class="px-3 py-2 whitespace-nowrap">{% if h.checkin_at %}{{ h.checkin_at|dt }}<br><span class="text-gray-400">{{ user_names.get(h.checked_in_by, '') }}</span>{% else %}<span class="text-amber-700 font-medium">Still out</span>{% endif %}</td>
+            <td class="px-3 py-2 min-w-40">{{ h.checkout_notes|dash }}{% if h.checkin_notes %}<br><span class="text-gray-500">In: {{ h.checkin_notes }}</span>{% endif %}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">No assignment history yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<div class="p-4 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
+  <div class="flex flex-wrap gap-2">
+    <a href="/assets/{{ asset.id }}/edit" class="py-1.5 px-3 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Edit</a>
+    {% if asset.status in ['available', 'under_maintenance'] %}
+    <button type="button" hx-post="/assets/{{ asset.id }}/maintenance" class="py-1.5 px-3 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">
+      {{ 'Mark available' if asset.status == 'under_maintenance' else 'Send to maintenance' }}</button>
+    {% endif %}
+    {% if asset.status != 'checked_out' %}
+      {% if asset.status != 'retired' %}
+      <button type="button" hx-post="/assets/{{ asset.id }}/retire" hx-confirm="Retire {{ asset.asset_tag_id }}? It will no longer be available for check-out."
+              class="py-1.5 px-3 rounded-lg border border-amber-300 text-amber-800 text-sm font-medium hover:bg-amber-50">Retire</button>
+      {% endif %}
+      <button type="button" hx-post="/assets/{{ asset.id }}/delete" hx-confirm="Delete {{ asset.asset_tag_id }}? This hides it from all lists."
+              class="py-1.5 px-3 rounded-lg border border-red-300 text-red-700 text-sm font-medium hover:bg-red-50">Delete</button>
+    {% endif %}
+  </div>
+  <button type="button" data-hs-overlay="#app-modal" class="py-1.5 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700">Close</button>
+</div>

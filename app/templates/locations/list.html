@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, search_box %}
+{% block title %}Locations{% endblock %}
+{% block content %}
+{% call page_header("Locations", "Physical places where assets are kept or used.") %}
+  <a href="/locations/new" class="py-2 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Add Location</a>
+{% endcall %}
+<div class="mb-3">{{ search_box("/locations", "#location-rows", q, "Search name, building, area, district…") }}</div>
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+        <tr>{% for h in ['Name','Floor','Building','Area','District','State','Pincode','Actions'] %}<th scope="col" class="px-4 py-3 text-start font-medium whitespace-nowrap">{{ h }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody id="location-rows" class="divide-y divide-gray-100">{% include "locations/_rows.html" %}</tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% from "macros/ui.html" import photo, detail, input, textarea, form_error %}
+{% from "partials/selects.html" import person_select, location_select %}
+<div class="p-5 border-b border-gray-200 flex items-center justify-between">
+  <h2 id="modal-title" class="text-lg font-semibold text-gray-900">Check Out {{ asset.asset_tag_id }}</h2>
+  <button type="button" data-hs-overlay="#app-modal" class="size-8 inline-flex justify-center items-center rounded-full text-gray-500 hover:bg-gray-100" aria-label="Close">
+    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+</div>
+
+<div class="p-5 space-y-6 max-h-[70vh] overflow-y-auto">
+  <section class="flex gap-4">
+    {{ photo(asset, 'size-16 shrink-0') }}
+    <dl class="grid grid-cols-2 sm:grid-cols-3 gap-3 grow">
+      {{ detail('Asset Tag ID', asset.asset_tag_id) }}
+      {{ detail('Description', asset.description) }}
+      {{ detail('Status', status_labels[asset.status]) }}
+      {{ detail('Brand', asset.brand) }}
+      {{ detail('Model', asset.model) }}
+      {{ detail('Serial No', asset.serial_number) }}
+      {{ detail('OS', asset.os) }}
+      {{ detail('OS Version', asset.os_version) }}
+      {{ detail('Processor', asset.processor) }}
+      {{ detail('Memory', asset.memory) }}
+      {{ detail('Hard Disk', asset.hard_disk) }}
+      {{ detail('Purchase Date', asset.purchase_date|d) }}
+      {{ detail('Warranty Expiry', asset.warranty_expiry|d) }}
+      {{ detail('Last Used By', asset.last_used_by) }}
+      <div><dt class="text-xs uppercase tracking-wide text-gray-500">Last Password</dt><dd class="mt-0.5 text-sm">{% include "assets/_password.html" %}</dd></div>
+    </dl>
+  </section>
+
+  <form id="checkout-form" hx-post="/checkout/{{ asset.id }}" hx-target="#modal-body" hx-swap="innerHTML" class="space-y-4">
+    {{ form_error(errors) }}
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        {{ person_select(people, values.get('employee_id'), errors) }}
+        <button type="button" hx-get="/people/inline-form" hx-target="#inline-slot" hx-swap="innerHTML" class="mt-1.5 text-xs font-medium text-brand-600 hover:underline">+ Add new person</button>
+      </div>
+      <div>
+        {{ location_select(locations, values.get('location_id'), errors) }}
+        <button type="button" hx-get="/locations/inline-form" hx-target="#inline-slot" hx-swap="innerHTML" class="mt-1.5 text-xs font-medium text-brand-600 hover:underline">+ Add new location</button>
+      </div>
+      <div class="sm:col-span-2">
+        {{ input('department', 'Department', values, errors, required=True, list_id='dept-list', attrs='autocomplete="off"') }}
+        <datalist id="dept-list">{% for d in departments %}<option value="{{ d }}">{% endfor %}</datalist>
+      </div>
+      <div class="sm:col-span-2">{{ textarea('notes', 'Check-Out Notes', values, errors, rows=2) }}</div>
+    </div>
+  </form>
+
+  {# Sibling of the form (never nested) so the inline add-person/location forms stay valid HTML #}
+  <div id="inline-slot"></div>
+</div>
+
+<div class="p-4 border-t border-gray-200 flex justify-end gap-2">
+  <button type="button" data-hs-overlay="#app-modal" class="py-2 px-4 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Cancel</button>
+  <button type="submit" form="checkout-form" class="py-2 px-5 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Check Out</button>
+</div>

@@ -1,0 +1,11 @@
+.env
+.venv
+node_modules
+frontend
+tests
+scripts
+docker-compose.yml
+Makefile
+.pytest_cache
+.ruff_cache
+BRD.md

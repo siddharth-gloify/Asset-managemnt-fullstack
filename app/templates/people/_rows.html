@@ -1,0 +1,15 @@
+{% from "macros/ui.html" import empty_row, pagination_row %}
+{% for p in page.items %}
+<tr class="hover:bg-gray-50">
+  <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">{{ p.name }}</td>
+  <td class="px-4 py-2 whitespace-nowrap">{{ p.employee_code }}</td>
+  <td class="px-4 py-2 whitespace-nowrap">{{ p.mobile }}</td>
+  <td class="px-4 py-2">{{ p.email }}</td>
+  <td class="px-4 py-2">{{ p.pincode }}</td>
+  <td class="px-4 py-2 whitespace-nowrap">{{ p.location.name }}</td>
+  <td class="px-4 py-2"><a href="/people/{{ p.id }}/edit" class="text-brand-600 hover:underline font-medium">Edit</a></td>
+</tr>
+{% else %}
+{{ empty_row(7, "No matching records found." if q else "No people added yet.") }}
+{% endfor %}
+{{ pagination_row(page, base_url, 7, "q=" ~ (q|urlencode), "#people-rows") }}

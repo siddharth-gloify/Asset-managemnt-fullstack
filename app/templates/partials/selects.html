@@ -1,0 +1,22 @@
+{# Person/location selects shared by the check-out form and the inline "add new" responses #}
+{% macro person_select(people, selected, errors) -%}
+<div id="person-select-wrap">
+  <label for="f-employee_id" class="block text-sm font-medium mb-1.5 text-gray-700">Assigned To <span class="text-red-500">*</span></label>
+  <select id="f-employee_id" name="employee_id" class="py-2 px-3 pe-9 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500 {% if errors.get('employee_id') %}border-red-500{% endif %}">
+    <option value="">Select person…</option>
+    {% for p in people %}<option value="{{ p.id }}" {% if selected|string == p.id|string %}selected{% endif %}>{{ p.name }} ({{ p.employee_code }})</option>{% endfor %}
+  </select>
+  {% if errors.get('employee_id') %}<p class="mt-1 text-xs text-red-600">{{ errors['employee_id'] }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro location_select(locations, selected, errors) -%}
+<div id="location-select-wrap">
+  <label for="f-location_id" class="block text-sm font-medium mb-1.5 text-gray-700">Location <span class="text-red-500">*</span></label>
+  <select id="f-location_id" name="location_id" class="py-2 px-3 pe-9 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500 {% if errors.get('location_id') %}border-red-500{% endif %}">
+    <option value="">Select location…</option>
+    {% for l in locations %}<option value="{{ l.id }}" {% if selected|string == l.id|string %}selected{% endif %}>{{ l.name }}</option>{% endfor %}
+  </select>
+  {% if errors.get('location_id') %}<p class="mt-1 text-xs text-red-600">{{ errors['location_id'] }}</p>{% endif %}
+</div>
+{%- endmacro %}

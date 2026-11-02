@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, empty_row, pager %}
+{% block title %}Audit Trail{% endblock %}
+{% block content %}
+{% call page_header("Audit Trail", "Every recorded action, newest first.") %}{% endcall %}
+<form method="get" class="flex flex-wrap items-end gap-3 mb-4">
+  <div>
+    <label class="block text-xs font-medium text-gray-600 mb-1" for="module">Module</label>
+    <select id="module" name="module" class="py-2 px-3 pe-9 border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500">
+      <option value="">All</option>
+      {% for m in modules %}<option value="{{ m }}" {% if filters.module == m %}selected{% endif %}>{{ m|title }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-600 mb-1" for="user_id">User</label>
+    <select id="user_id" name="user_id" class="py-2 px-3 pe-9 border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500">
+      <option value="">All</option>
+      {% for uid, uname in users %}<option value="{{ uid }}" {% if filters.user_id == uid|string %}selected{% endif %}>{{ uname }}</option>{% endfor %}
+    </select>
+  </div>
+  <div><label class="block text-xs font-medium text-gray-600 mb-1" for="date_from">From</label>
+    <input id="date_from" type="date" name="date_from" value="{{ filters.date_from }}" class="py-2 px-3 border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500"></div>
+  <div><label class="block text-xs font-medium text-gray-600 mb-1" for="date_to">To</label>
+    <input id="date_to" type="date" name="date_to" value="{{ filters.date_to }}" class="py-2 px-3 border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500"></div>
+  <button type="submit" class="py-2 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Filter</button>
+  <a href="/audit" class="py-2 px-3 text-sm text-gray-600 hover:underline">Reset</a>
+</form>
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+        <tr>{% for h in ['Date & Time','Module','Action','Asset','User','Remarks','IP'] %}<th scope="col" class="px-4 py-3 text-start font-medium whitespace-nowrap">{{ h }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for log, user_name, tag in page.items %}
+        <tr class="hover:bg-gray-50 align-top">
+          <td class="px-4 py-2 whitespace-nowrap">{{ log.created_at|dt }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ log.module|title }}</td>
+          <td class="px-4 py-2 whitespace-nowrap font-medium">{{ log.operation_type }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ tag|dash }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ user_name|dash }}</td>
+          <td class="px-4 py-2 min-w-48">
+            {{ log.remarks|dash }}
+            {% if log.details and log.details.get('changes') %}
+            <details class="mt-1 text-xs text-gray-500"><summary class="cursor-pointer">Changes</summary>
+              <ul class="mt-1 space-y-0.5">{% for field, c in log.details['changes'].items() %}<li><span class="font-medium">{{ field }}</span>: {{ c['from']|dash }} → {{ c['to']|dash }}</li>{% endfor %}</ul>
+            </details>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2 whitespace-nowrap font-mono text-xs text-gray-500">{{ log.ip|dash }}</td>
+        </tr>
+        {% else %}
+        {{ empty_row(7, "No matching records found.") }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ pager(page, base_url, extra_qs) }}
+{% endblock %}

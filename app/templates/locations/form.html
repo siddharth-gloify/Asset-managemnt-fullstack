@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import input, form_error, page_header %}
+{% block title %}{{ 'Edit Location' if location else 'Add Location' }}{% endblock %}
+{% block content %}
+{% call page_header('Edit ' ~ location.name if location else 'Add Location', 'Fields marked * are required.') %}
+  <a href="/locations" class="py-2 px-4 rounded-lg border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">All locations</a>
+{% endcall %}
+<form method="post" class="bg-white border border-gray-200 rounded-xl p-6 space-y-5 max-w-3xl">
+  {{ form_error(errors) }}
+  <div class="grid gap-4 sm:grid-cols-2">
+    {{ input('name', 'Name', values, errors, required=True) }}
+    {{ input('floor', 'Floor', values, errors, required=True) }}
+    {{ input('building_name', 'Building Name', values, errors, required=True) }}
+    {{ input('area', 'Area', values, errors, required=True) }}
+    {{ input('district', 'District', values, errors, required=True) }}
+    {{ input('state', 'State', values, errors, required=True) }}
+    {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric"', hint='Digits only') }}
+  </div>
+  <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+    <a href="/locations" class="py-2 px-4 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Cancel</a>
+    <button type="submit" class="py-2 px-5 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">{{ 'Save changes' if location else 'Add Location' }}</button>
+  </div>
+</form>
+{% endblock %}

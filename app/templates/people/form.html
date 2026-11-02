@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import input, textarea, select, form_error, page_header %}
+{% block title %}{{ 'Edit Person' if person else 'Add People' }}{% endblock %}
+{% block content %}
+{% call page_header('Edit ' ~ person.name if person else 'Add People', 'Fields marked * are required.') %}
+  <a href="/people" class="py-2 px-4 rounded-lg border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">All people</a>
+{% endcall %}
+<form method="post" class="bg-white border border-gray-200 rounded-xl p-6 space-y-5 max-w-3xl">
+  {{ form_error(errors) }}
+  <div class="grid gap-4 sm:grid-cols-2">
+    {{ input('name', 'Name', values, errors, required=True) }}
+    {{ input('employee_code', 'Employee ID', values, errors, required=True) }}
+    {{ input('mobile', 'Mobile Number', values, errors, required=True, attrs='inputmode="numeric"', hint='Digits only') }}
+    {{ input('email', 'Email Address', values, errors, type='email', required=True) }}
+    {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric"') }}
+    {% set opts = [] %}{% for l in locations %}{% set _ = opts.append((l.id, l.name)) %}{% endfor %}
+    {{ select('location_id', 'Location', opts, values.get('location_id'), errors, required=True) }}
+    <div class="sm:col-span-2">{{ textarea('address', 'Address', values, errors, required=True) }}</div>
+  </div>
+  {% if not locations %}<p class="text-sm text-amber-700">No locations exist yet. <a class="underline" href="/locations/new">Add a location</a> first.</p>{% endif %}
+  <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+    <a href="/people" class="py-2 px-4 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Cancel</a>
+    <button type="submit" class="py-2 px-5 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">{{ 'Save changes' if person else 'Add Person' }}</button>
+  </div>
+</form>
+{% endblock %}

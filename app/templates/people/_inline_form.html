@@ -1,0 +1,20 @@
+{% from "macros/ui.html" import input, textarea, select, form_error %}
+<form hx-post="/people/inline" hx-target="#person-select-wrap" hx-swap="outerHTML"
+      class="rounded-lg border border-brand-100 bg-brand-50/40 p-4 space-y-3">
+  <div class="flex items-center justify-between">
+    <h3 class="text-sm font-semibold text-gray-900">Add new person</h3>
+    <button type="button" class="text-xs text-gray-500 hover:underline" onclick="document.getElementById('inline-slot').innerHTML=''">Cancel</button>
+  </div>
+  {{ form_error(errors) }}
+  <div class="grid gap-3 sm:grid-cols-2">
+    {{ input('name', 'Name', values, errors, required=True) }}
+    {{ input('employee_code', 'Employee ID', values, errors, required=True) }}
+    {{ input('mobile', 'Mobile Number', values, errors, required=True, attrs='inputmode="numeric"') }}
+    {{ input('email', 'Email Address', values, errors, type='email', required=True) }}
+    {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric"') }}
+    {% set opts = [] %}{% for l in locations %}{% set _ = opts.append((l.id, l.name)) %}{% endfor %}
+    {{ select('location_id', 'Location', opts, values.get('location_id'), errors, required=True) }}
+    <div class="sm:col-span-2">{{ textarea('address', 'Address', values, errors, required=True, rows=2) }}</div>
+  </div>
+  <div class="flex justify-end"><button type="submit" class="py-1.5 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Save person</button></div>
+</form>

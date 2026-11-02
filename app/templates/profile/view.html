@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, detail %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+{% call page_header("Profile", "Your account information.") %}{% endcall %}
+<div class="bg-white border border-gray-200 rounded-xl p-6 max-w-2xl">
+  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    {{ detail('Name', user.name) }}
+    {{ detail('Email', user.email) }}
+    {{ detail('Role', user.role|title) }}
+    {{ detail('Last Login', user.last_login_at|dt) }}
+  </dl>
+  <div class="mt-6 pt-5 border-t border-gray-100 flex flex-wrap gap-2">
+    <a href="/profile/edit" class="py-2 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Edit Profile</a>
+    <a href="/profile/password" class="py-2 px-4 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Change Password</a>
+    <form method="post" action="/logout"><button type="submit" class="py-2 px-4 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Logout</button></form>
+  </div>
+</div>
+{% endblock %}

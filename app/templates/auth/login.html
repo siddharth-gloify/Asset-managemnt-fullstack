@@ -1,0 +1,25 @@
+{% extends "bare.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="w-full max-w-sm">
+  <div class="text-center mb-6">
+    <span class="inline-flex size-12 items-center justify-center rounded-xl bg-brand-600 text-white text-xl font-bold">A</span>
+    <h1 class="mt-4 text-2xl font-semibold text-gray-900">Assetify <span class="font-normal text-gray-500 text-lg">by GLOIFY</span></h1>
+    <p class="mt-1 text-sm text-gray-500">Sign in to manage your assets</p>
+  </div>
+  <form method="post" action="/login" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+    {% if expired %}<div class="rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm p-3">Your session expired after 30 minutes of inactivity. Please sign in again.</div>{% endif %}
+    {% if error %}<div class="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm p-3" role="alert">{{ error }}</div>{% endif %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div>
+      <label for="email" class="block text-sm font-medium mb-1.5">Email</label>
+      <input id="email" name="email" type="email" required autofocus autocomplete="username" value="{{ email or '' }}" class="py-2 px-3 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500">
+    </div>
+    <div>
+      <label for="password" class="block text-sm font-medium mb-1.5">Password</label>
+      <input id="password" name="password" type="password" required autocomplete="current-password" class="py-2 px-3 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500">
+    </div>
+    <button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">Sign in</button>
+  </form>
+</div>
+{% endblock %}

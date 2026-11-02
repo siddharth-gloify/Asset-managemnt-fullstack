@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, search_box %}
+{% block title %}Check Out{% endblock %}
+{% block content %}
+{% call page_header("Check Out", "Select an available asset to assign it to a person.") %}
+  <button type="button" id="action-btn" data-url="/checkout/{id}/form" disabled
+          class="py-2 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 disabled:opacity-50 disabled:pointer-events-none">Check Out</button>
+{% endcall %}
+<div class="mb-3">{{ search_box("/checkout", "#select-rows", q, "Search available assets…") }}</div>
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm" data-select-table>
+      <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+        <tr>{% for h in ['Select','Photo','Asset Tag ID','Description','Status','View'] %}<th scope="col" class="px-4 py-3 text-start font-medium">{{ h }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody id="select-rows" class="divide-y divide-gray-100">{% include "checkout/_rows.html" %}</tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

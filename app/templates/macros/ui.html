@@ -1,0 +1,127 @@
+{# Shared UI macros #}
+
+{% macro badge(status) -%}
+<span class="inline-flex items-center gap-x-1 py-0.5 px-2 rounded-full text-xs font-medium whitespace-nowrap {{ status_badge.get(status, 'bg-gray-100 text-gray-700') }}">{{ status_labels.get(status, status) }}</span>
+{%- endmacro %}
+
+{% macro input(name, label, values, errors, type='text', required=False, attrs='', hint='', list_id='') -%}
+<div>
+  <label for="f-{{ name }}" class="block text-sm font-medium mb-1.5 text-gray-700">{{ label }}{% if required %} <span class="text-red-500">*</span>{% endif %}</label>
+  <input type="{{ type }}" id="f-{{ name }}" name="{{ name }}" value="{{ values.get(name, '') if values.get(name) is not none else '' }}"
+    {% if list_id %}list="{{ list_id }}"{% endif %}
+    class="py-2 px-3 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500 {% if errors.get(name) %}border-red-500{% endif %}" {{ attrs|safe }}>
+  {% if hint and not errors.get(name) %}<p class="mt-1 text-xs text-gray-500">{{ hint }}</p>{% endif %}
+  {% if errors.get(name) %}<p class="mt-1 text-xs text-red-600">{{ errors[name] }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro textarea(name, label, values, errors, required=False, rows=3) -%}
+<div>
+  <label for="f-{{ name }}" class="block text-sm font-medium mb-1.5 text-gray-700">{{ label }}{% if required %} <span class="text-red-500">*</span>{% endif %}</label>
+  <textarea id="f-{{ name }}" name="{{ name }}" rows="{{ rows }}"
+    class="py-2 px-3 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500 {% if errors.get(name) %}border-red-500{% endif %}">{{ values.get(name, '') or '' }}</textarea>
+  {% if errors.get(name) %}<p class="mt-1 text-xs text-red-600">{{ errors[name] }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro select(name, label, options, selected, errors, required=False, placeholder='Select…', attrs='') -%}
+{# options: list of (value, text) #}
+<div>
+  <label for="f-{{ name }}" class="block text-sm font-medium mb-1.5 text-gray-700">{{ label }}{% if required %} <span class="text-red-500">*</span>{% endif %}</label>
+  <select id="f-{{ name }}" name="{{ name }}" {{ attrs|safe }}
+    class="py-2 px-3 pe-9 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500 {% if errors.get(name) %}border-red-500{% endif %}">
+    {% if placeholder %}<option value="">{{ placeholder }}</option>{% endif %}
+    {% for value, text in options %}
+    <option value="{{ value }}" {% if selected|string == value|string %}selected{% endif %}>{{ text }}</option>
+    {% endfor %}
+  </select>
+  {% if errors.get(name) %}<p class="mt-1 text-xs text-red-600">{{ errors[name] }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro form_error(errors) -%}
+{% if errors.get('_') %}
+<div class="rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm p-3" role="alert">{{ errors['_'] }}</div>
+{% endif %}
+{%- endmacro %}
+
+{% macro empty_row(cols, text) -%}
+<tr><td colspan="{{ cols }}" class="px-4 py-12 text-center text-sm text-gray-500">
+  <svg class="mx-auto size-8 text-gray-300 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m6 4.125l2.25 2.25m0 0l2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+  {{ text }}
+</td></tr>
+{%- endmacro %}
+
+{% macro photo(asset, size='size-10') -%}
+{% if asset.photo_name %}
+<img src="/media/{{ asset.photo_name }}" alt="" loading="lazy" class="{{ size }} rounded-md object-cover border border-gray-200">
+{% else %}
+<span class="{{ size }} rounded-md bg-gray-100 border border-gray-200 inline-flex items-center justify-center text-gray-400">
+  <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"/></svg>
+</span>
+{% endif %}
+{%- endmacro %}
+
+{# Pagination as a table footer row. target = css selector of the tbody to swap (htmx). #}
+{% macro pagination_row(page, base_url, cols, params, target) -%}
+{% if page.total > 0 %}
+<tr class="bg-gray-50"><td colspan="{{ cols }}" class="px-4 py-3">
+  <div class="flex items-center justify-between text-sm text-gray-600">
+    <span>Showing {{ page.first }}–{{ page.last }} of {{ page.total }}</span>
+    <div class="inline-flex gap-x-2">
+      {% set qs = params %}
+      {% if page.has_prev %}
+      <a href="{{ base_url }}?{{ qs }}&page={{ page.page - 1 }}" hx-get="{{ base_url }}?{{ qs }}&page={{ page.page - 1 }}" hx-target="{{ target }}" hx-swap="innerHTML"
+         class="py-1.5 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-sm">Previous</a>
+      {% endif %}
+      <span class="py-1.5 px-2 text-gray-500">Page {{ page.page }} / {{ page.pages }}</span>
+      {% if page.has_next %}
+      <a href="{{ base_url }}?{{ qs }}&page={{ page.page + 1 }}" hx-get="{{ base_url }}?{{ qs }}&page={{ page.page + 1 }}" hx-target="{{ target }}" hx-swap="innerHTML"
+         class="py-1.5 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-sm">Next</a>
+      {% endif %}
+    </div>
+  </div>
+</td></tr>
+{% endif %}
+{%- endmacro %}
+
+{# Plain (full page) pagination for pages that are not htmx-swapped. #}
+{% macro pager(page, base_url, extra_qs='') -%}
+{% if page.pages > 1 %}
+<div class="flex items-center justify-between text-sm text-gray-600 mt-4">
+  <span>Showing {{ page.first }}–{{ page.last }} of {{ page.total }}</span>
+  <div class="inline-flex gap-x-2">
+    {% if page.has_prev %}<a class="py-1.5 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50" href="{{ base_url }}?{{ extra_qs }}&page={{ page.page - 1 }}">Previous</a>{% endif %}
+    <span class="py-1.5 px-2 text-gray-500">Page {{ page.page }} / {{ page.pages }}</span>
+    {% if page.has_next %}<a class="py-1.5 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50" href="{{ base_url }}?{{ extra_qs }}&page={{ page.page + 1 }}">Next</a>{% endif %}
+  </div>
+</div>
+{% endif %}
+{%- endmacro %}
+
+{% macro detail(label, value) -%}
+<div><dt class="text-xs uppercase tracking-wide text-gray-500">{{ label }}</dt><dd class="mt-0.5 text-sm text-gray-900 break-words">{{ value|dash }}</dd></div>
+{%- endmacro %}
+
+{% macro page_header(title, subtitle='') -%}
+<div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <h1 class="text-2xl font-semibold text-gray-900">{{ title }}</h1>
+    {% if subtitle %}<p class="mt-1 text-sm text-gray-500">{{ subtitle }}</p>{% endif %}
+  </div>
+  <div class="flex gap-2">{{ caller() if caller else '' }}</div>
+</div>
+{%- endmacro %}
+
+{% macro search_box(url, target, q, placeholder, extra='') -%}
+<div class="relative max-w-md w-full">
+  <input type="search" name="q" value="{{ q }}" placeholder="{{ placeholder }}" autocomplete="off"
+    hx-get="{{ url }}" hx-trigger="input changed delay:300ms, search" hx-target="{{ target }}" hx-swap="innerHTML"
+    hx-include="{{ extra or 'this' }}" hx-indicator="#search-spinner"
+    class="py-2 ps-10 pe-4 block w-full border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500">
+  <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+    <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  </div>
+  <span id="search-spinner" class="htmx-indicator absolute inset-y-0 end-0 flex items-center pe-3 text-xs text-gray-400">…</span>
+</div>
+{%- endmacro %}

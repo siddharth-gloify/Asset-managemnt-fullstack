@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, empty_row %}
+{% block title %}Latest Operations{% endblock %}
+{% block content %}
+{% call page_header("Latest Operations", "The 100 most recent asset, people and location operations.") %}
+  <a href="/audit" class="py-2 px-4 rounded-lg border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">Full audit trail</a>
+{% endcall %}
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+        <tr>{% for h in ['Date & Time','Operation Type','Asset Tag ID','Employee','Location','User','Notes'] %}<th scope="col" class="px-4 py-3 text-start font-medium whitespace-nowrap">{{ h }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for log, tag, employee, location, user_name in rows %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 whitespace-nowrap">{{ log.created_at|dt }}</td>
+          <td class="px-4 py-2 whitespace-nowrap font-medium">{{ log.operation_type }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ tag|dash }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ employee|dash }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ location|dash }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ user_name|dash }}</td>
+          <td class="px-4 py-2 min-w-48">{{ log.remarks|dash }}</td>
+        </tr>
+        {% else %}
+        {{ empty_row(7, "No operations recorded yet.") }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

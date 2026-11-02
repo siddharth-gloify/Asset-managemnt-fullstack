@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, search_box %}
+{% block title %}Assets{% endblock %}
+{% block content %}
+{% call page_header("Assets", "Search, view and manage every device.") %}
+  <a href="/assets/new" class="py-2 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Add Device</a>
+{% endcall %}
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+  {% set cards = [('', 'All assets', counts['all']), ('available', 'Available', counts['available']), ('checked_out', 'Checked Out', counts['checked_out']), ('under_maintenance', 'Under Maintenance', counts['under_maintenance']), ('retired', 'Retired', counts['retired'])] %}
+  {% for value, label, n in cards %}
+  <a href="/assets{% if value %}?status={{ value }}{% endif %}"
+     class="block rounded-xl border p-4 bg-white hover:border-brand-500 transition {% if status == value %}border-brand-500 ring-1 ring-brand-500{% else %}border-gray-200{% endif %}">
+    <p class="text-xs uppercase tracking-wide text-gray-500">{{ label }}</p>
+    <p class="mt-1 text-2xl font-semibold text-gray-900">{{ n }}</p>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="flex flex-wrap items-center gap-3 mb-3">
+  {{ search_box("/assets", "#asset-rows", q, "Search tag, serial, brand, model, employee, status…", "[name='q'], [name='status']") }}
+  <select name="status" hx-get="/assets" hx-target="#asset-rows" hx-swap="innerHTML" hx-include="[name='q']"
+          class="py-2 px-3 pe-9 border-gray-300 rounded-lg text-sm focus:border-brand-500 focus:ring-brand-500" aria-label="Filter by status">
+    <option value="">All statuses</option>
+    {% for s in asset_statuses %}<option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ status_labels[s] }}</option>{% endfor %}
+  </select>
+</div>
+
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+        <tr>
+          {% for h in ['Photo','Asset Tag ID','Description','Status','Brand','Model','Serial Number','Memory','Hard Disk','OS','OS Version','Processor','Department','Last Check-In','Location','Purchase Date','Warranty Expiry','Actions'] %}
+          <th scope="col" class="px-4 py-3 text-start font-medium whitespace-nowrap">{{ h }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody id="asset-rows" class="divide-y divide-gray-100">
+        {% include "assets/_rows.html" %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

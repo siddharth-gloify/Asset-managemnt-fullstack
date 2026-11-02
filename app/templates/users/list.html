@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header %}
+{% block title %}Users{% endblock %}
+{% block content %}
+{% call page_header("Users", active_count ~ " of " ~ max_users ~ " active users.") %}
+  <a href="/users/new" class="py-2 px-4 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Add user</a>
+{% endcall %}
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+        <tr>{% for h in ['Name','Email','Role','Status','Last Login','Actions'] %}<th scope="col" class="px-4 py-3 text-start font-medium whitespace-nowrap">{{ h }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for u in users %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 font-medium text-gray-900">{{ u.name }}</td>
+          <td class="px-4 py-2">{{ u.email }}</td>
+          <td class="px-4 py-2">{{ u.role|title }}</td>
+          <td class="px-4 py-2">{% if u.is_active %}<span class="inline-flex rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium px-2 py-0.5">Active</span>{% else %}<span class="inline-flex rounded-full bg-gray-200 text-gray-700 text-xs font-medium px-2 py-0.5">Inactive</span>{% endif %}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ u.last_login_at|dt }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">
+            <a href="/users/{{ u.id }}/reset-password" class="text-brand-600 hover:underline font-medium">Reset password</a>
+            {% if u.id != user.id %}
+            <span class="text-gray-300 mx-1">|</span>
+            {% if u.is_active %}
+            <form method="post" action="/users/{{ u.id }}/deactivate" class="inline" onsubmit="return confirm('Deactivate {{ u.name }}?')"><button class="text-red-600 hover:underline font-medium" type="submit">Deactivate</button></form>
+            {% else %}
+            <form method="post" action="/users/{{ u.id }}/activate" class="inline"><button class="text-emerald-700 hover:underline font-medium" type="submit">Activate</button></form>
+            {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

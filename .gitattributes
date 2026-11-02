@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+app/static/js/preline.js -diff linguist-vendored
+app/static/js/htmx.min.js -diff linguist-vendored
+app/static/css/app.css -diff linguist-generated
+uv.lock -diff

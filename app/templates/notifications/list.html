@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, pager %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+{% call page_header("Notifications", "Alerts about assets, people, locations and warranties.") %}
+  {% if page.items %}
+  <form method="post" action="/notifications/read-all"><button type="submit" class="py-2 px-4 rounded-lg border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">Mark all as read</button></form>
+  {% endif %}
+{% endcall %}
+<div class="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100 overflow-hidden">
+  {% for n in page.items %}
+  <div class="flex items-start gap-3 p-4 {% if not n.is_read %}bg-brand-50/50{% endif %}">
+    <span class="mt-1.5 size-2 rounded-full shrink-0 {% if n.is_read %}bg-gray-300{% else %}bg-brand-600{% endif %}"></span>
+    <div class="grow min-w-0">
+      <p class="text-xs uppercase tracking-wide text-gray-500">{{ labels.get(n.type, n.type) }} · {{ n.created_at|dt }}</p>
+      <p class="text-sm text-gray-900 mt-0.5">{% if n.link %}<a href="{{ n.link }}" class="hover:underline">{{ n.message }}</a>{% else %}{{ n.message }}{% endif %}</p>
+    </div>
+    {% if not n.is_read %}
+    <form method="post" action="/notifications/{{ n.id }}/read"><button class="text-xs font-medium text-brand-600 hover:underline whitespace-nowrap" type="submit">Mark read</button></form>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="px-4 py-12 text-center text-sm text-gray-500">No notifications available.</div>
+  {% endfor %}
+</div>
+{{ pager(page, base_url) }}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import input, select, form_error, page_header %}
+{% block title %}{{ 'Edit Device' if editing else 'Add Device' }}{% endblock %}
+{% block content %}
+{% call page_header('Edit ' ~ asset.asset_tag_id if editing else 'Add Device', 'Fields marked * are required.') %}
+  <a href="/assets" class="py-2 px-4 rounded-lg border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">Back to Assets</a>
+{% endcall %}
+
+<form method="post" enctype="multipart/form-data" class="bg-white border border-gray-200 rounded-xl p-6 space-y-6 max-w-5xl">
+  {{ form_error(errors) }}
+  <div class="grid gap-4 md:grid-cols-3">
+    {{ input('asset_tag_id', 'Asset Tag ID', values, errors, required=True) }}
+    {{ select('asset_type', 'Asset Type', asset_type_options, values.get('asset_type'), errors, placeholder='') }}
+    {% if editing %}
+      <div><span class="block text-sm font-medium mb-1.5 text-gray-700">Status</span>
+        <p class="py-2 text-sm">{{ status_labels[asset.status] }} <span class="text-xs text-gray-500">(changed via Check-Out / Check-In / Maintenance / Retire)</span></p></div>
+    {% else %}
+      {{ select('status', 'Status', [('available', 'Available'), ('under_maintenance', 'Under Maintenance')], values.get('status'), errors, required=True, placeholder='') }}
+    {% endif %}
+    <div class="md:col-span-3">{{ input('description', 'Description', values, errors, required=True) }}</div>
+    {{ input('brand', 'Brand', values, errors, required=True) }}
+    {{ input('model', 'Model', values, errors, required=True) }}
+    {{ input('serial_number', 'Serial No', values, errors, required=True) }}
+    {{ input('os', 'OS', values, errors) }}
+    {{ input('os_version', 'OS Version', values, errors) }}
+    {{ input('processor', 'Processor', values, errors) }}
+    {{ input('memory', 'Memory', values, errors, hint='e.g. 16 GB') }}
+    {{ input('hard_disk', 'Hard Disk', values, errors, hint='e.g. 512 GB SSD') }}
+    <div></div>
+    {{ input('purchase_date', 'Purchase Date', values, errors, type='date', required=True) }}
+    {{ input('warranty_expiry', 'Warranty Expiry', values, errors, type='date', required=True) }}
+    <div></div>
+    <div>
+      {{ input('last_password', 'Last Password', {}, errors, type='password', attrs='autocomplete="new-password"', hint=('Leave blank to keep the stored password. Stored encrypted.' if editing and asset.last_password_enc else 'Stored encrypted; masked in the UI.')) }}
+    </div>
+    <div class="md:col-span-2">
+      <label for="f-photo" class="block text-sm font-medium mb-1.5 text-gray-700">Asset Photo</label>
+      <input type="file" id="f-photo" name="photo" accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+             class="block w-full text-sm text-gray-600 border border-gray-300 rounded-lg file:me-4 file:py-2 file:px-4 file:border-0 file:bg-gray-100 file:text-sm file:font-medium hover:file:bg-gray-200">
+      <p class="mt-1 text-xs text-gray-500">JPG, JPEG or PNG, up to 4 MB.{% if editing and asset.photo_name %} Uploading replaces the current photo.{% endif %}</p>
+      {% if errors.get('photo') %}<p class="mt-1 text-xs text-red-600">{{ errors['photo'] }}</p>{% endif %}
+    </div>
+  </div>
+  <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+    <a href="/assets" class="py-2 px-4 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Cancel</a>
+    <button type="submit" class="py-2 px-5 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">{{ 'Save changes' if editing else 'Add Device' }}</button>
+  </div>
+</form>
+{% endblock %}

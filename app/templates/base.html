@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{% block title %}{% endblock %}{% if self.title()|trim %} · {% endif %}{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="min-h-full text-gray-800 antialiased">
+{% set user = request.state.user %}
+<header class="sticky top-0 z-40 w-full bg-white border-b border-gray-200 text-sm">
+  <nav class="max-w-[96rem] mx-auto px-4 xl:flex xl:items-center xl:justify-between" aria-label="Global">
+    <div class="flex items-center justify-between py-3">
+      <a href="/assets" class="flex items-center gap-2 text-lg font-bold text-gray-900">
+        <span class="inline-flex size-8 items-center justify-center rounded-lg bg-brand-600 text-white text-sm">A</span>
+        <span>Assetify <span class="font-normal text-gray-500 text-sm">by GLOIFY</span></span>
+      </a>
+      <button type="button" class="hs-collapse-toggle xl:hidden size-9 inline-flex justify-center items-center rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+              data-hs-collapse="#main-nav" aria-controls="main-nav" aria-label="Toggle navigation">
+        <svg class="hs-collapse-open:hidden size-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        <svg class="hs-collapse-open:block hidden size-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="main-nav" class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow xl:block">
+      <div class="flex flex-col gap-1 pb-3 xl:pb-0 xl:flex-row xl:items-center xl:justify-end">
+        {% for key, label, url in nav_items %}
+        <a href="{{ url }}" {% if active == key %}aria-current="page"{% endif %}
+           class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == key %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{{ label }}</a>
+        {% endfor %}
+        <span class="hidden xl:block w-px h-6 bg-gray-200 mx-1"></span>
+        <div id="bell" hx-get="/notifications/badge" hx-trigger="load, every 60s" hx-swap="outerHTML" class="px-3 py-2 text-gray-600">Notifications</div>
+        <a href="/audit" class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == 'audit' %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Audit</a>
+        {% if user and user.role == 'admin' %}
+        <a href="/users" class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == 'users' %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Users</a>
+        {% endif %}
+        <a href="/profile" class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == 'profile' %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Profile</a>
+        <form method="post" action="/logout"><button type="submit" class="w-full text-start px-3 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-100 whitespace-nowrap">Log Out</button></form>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="max-w-[96rem] mx-auto px-4 py-6">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="max-w-[96rem] mx-auto px-4 pb-8 text-xs text-gray-400">{{ app_name }}</footer>
+
+{# Shared modal shell: partials are swapped into #modal-body and opened via HSOverlay #}
+<div id="app-modal" class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none" role="dialog" tabindex="-1" aria-labelledby="modal-title">
+  <div class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-300 mt-0 opacity-0 ease-out transition-all sm:max-w-3xl sm:w-full m-3 sm:mx-auto">
+    <div id="modal-body" class="pointer-events-auto bg-white rounded-xl shadow-xl border border-gray-200"></div>
+  </div>
+</div>
+
+<div id="toast-area" class="fixed top-4 end-4 z-[90] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]" aria-live="polite"></div>
+<script id="flash-data" type="application/json">{{ get_flashes(request)|tojson }}</script>
+
+<script src="/static/js/htmx.min.js"></script>
+<script src="/static/js/preline.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
