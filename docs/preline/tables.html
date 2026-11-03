@@ -1,0 +1,105 @@
+<!-- Official Preline UI 5.0 markup: https://preline.co/docs/tables.html -->
+
+<!-- example: default-table -->
+<!-- Table -->
+                          <div class="min-w-full">
+                            <div class="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-track]:bg-scrollbar-track [&::-webkit-scrollbar-thumb]:bg-scrollbar-thumb">
+                              <table class="min-w-full divide-y divide-table-line">
+                                <thead>
+                                  <tr>
+                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase">Age</th>
+                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase">Address</th>
+                                    <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-muted-foreground-1 uppercase">Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="divide-y divide-table-line">
+                                  <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">John Brown</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">45</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">New York No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">Jim Green</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">27</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">London No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">Joe Black</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">31</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">Sidney No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <!-- End Table -->
+
+<!-- example: hoverable-rows -->
+<!-- Table -->
+                          <div class="min-w-full">
+                            <div class="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-track]:bg-scrollbar-track [&::-webkit-scrollbar-thumb]:bg-scrollbar-thumb">
+                              <table class="min-w-full divide-y divide-table-line">
+                                <thead>
+                                  <tr>
+                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase">Age</th>
+                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase">Address</th>
+                                    <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-muted-foreground-1 uppercase">Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="divide-y divide-table-line">
+                                  <tr class="hover:bg-muted-hover">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">John Brown</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">45</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">New York No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                  <tr class="hover:bg-muted-hover">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">Jim Green</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">27</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">London No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                  <tr class="hover:bg-muted-hover">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">Joe Black</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">31</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">Sidney No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                  <tr class="hover:bg-muted-hover">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">Edward King</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">16</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">LA No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                  <tr class="hover:bg-muted-hover">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">Jim Red</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">45</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">Melbourne No. 1 Lake Park</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                      <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg text-primary hover:text-primary-hover focus:outline-hidden focus:text-primary-focus disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <!-- End Table -->

@@ -1,14 +1,14 @@
-{% from "macros/ui.html" import empty_row, pagination_row %}
+{% from "macros/ui.html" import empty_row, pagination_row, btn %}
 {% for l in page.items %}
-<tr class="hover:bg-gray-50">
-  <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">{{ l.name }}</td>
-  <td class="px-4 py-2">{{ l.floor }}</td>
-  <td class="px-4 py-2 whitespace-nowrap">{{ l.building_name }}</td>
-  <td class="px-4 py-2 whitespace-nowrap">{{ l.area }}</td>
-  <td class="px-4 py-2 whitespace-nowrap">{{ l.district }}</td>
-  <td class="px-4 py-2 whitespace-nowrap">{{ l.state }}</td>
-  <td class="px-4 py-2">{{ l.pincode }}</td>
-  <td class="px-4 py-2"><a href="/locations/{{ l.id }}/edit" class="text-brand-600 hover:underline font-medium">Edit</a></td>
+<tr class="hover:bg-muted-hover">
+  <td class="{{ td_strong }}">{{ l.name }}</td>
+  <td class="{{ td }}">{{ l.floor }}</td>
+  <td class="{{ td }}">{{ l.building_name }}</td>
+  <td class="{{ td }}">{{ l.area }}</td>
+  <td class="{{ td }}">{{ l.district }}</td>
+  <td class="{{ td }}">{{ l.state }}</td>
+  <td class="{{ td }}">{{ l.pincode }}</td>
+  <td class="{{ td }}">{{ btn('Edit', 'link', icon_name='pencil', href='/locations/' ~ l.id ~ '/edit') }}</td>
 </tr>
 {% else %}
 {{ empty_row(8, "No matching records found." if q else "No locations added yet.") }}

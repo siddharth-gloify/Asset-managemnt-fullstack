@@ -1,4 +1,4 @@
-﻿import os
+import os
 
 from cryptography.fernet import Fernet
 

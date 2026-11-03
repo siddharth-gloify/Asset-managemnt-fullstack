@@ -1,4 +1,4 @@
-﻿# Local development database only. Production uses Neon via the Vercel Marketplace.
+# Local development database only. Production uses Neon via the Vercel Marketplace.
 services:
   db:
     image: postgres:16

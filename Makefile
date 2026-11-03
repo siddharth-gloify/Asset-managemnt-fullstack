@@ -1,4 +1,4 @@
-﻿.PHONY: install dev build-css init-db test lint create-admin db
+.PHONY: install dev build-css init-db test lint create-admin db
 
 install:
 	uv sync

@@ -1,0 +1,18 @@
+{# Person/location selects shared by the check-out form and the inline "add new" responses #}
+{% from "macros/ui.html" import select %}
+
+{% macro person_select(people, selected, errors) -%}
+<div id="person-select-wrap">
+  {%- set opts = [] -%}
+  {%- for p in people %}{% set _ = opts.append((p.id, p.name ~ ' (' ~ p.employee_code ~ ')')) %}{% endfor -%}
+  {{ select('employee_id', 'Assigned To', opts, selected, errors, required=True, placeholder='Select person…') }}
+</div>
+{%- endmacro %}
+
+{% macro location_select(locations, selected, errors) -%}
+<div id="location-select-wrap">
+  {%- set opts = [] -%}
+  {%- for l in locations %}{% set _ = opts.append((l.id, l.name)) %}{% endfor -%}
+  {{ select('location_id', 'Location', opts, selected, errors, required=True, placeholder='Select location…') }}
+</div>
+{%- endmacro %}

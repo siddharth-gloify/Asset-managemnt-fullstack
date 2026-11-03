@@ -74,11 +74,12 @@ def create_app() -> FastAPI:
 
     @app.get("/", include_in_schema=False)
     def index():
-        return RedirectResponse("/assets", status_code=303)
+        return RedirectResponse("/dashboard", status_code=303)
 
     for module in (auth, assets, checkout, checkin, people, locations, system):
         app.include_router(module.router)
     for r in (
+        views.dashboard_router,
         views.operations_router,
         views.warranty_router,
         views.notifications_router,
@@ -123,3 +124,4 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+

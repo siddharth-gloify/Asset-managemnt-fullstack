@@ -18,10 +18,20 @@ from app.services import audit as audit_svc
 from app.services import notifications as notif_svc
 from app.services import warranty as warranty_svc
 
+dashboard_router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 operations_router = APIRouter(prefix="/operations", tags=["operations"])
 warranty_router = APIRouter(prefix="/warranty", tags=["warranty"])
 notifications_router = APIRouter(prefix="/notifications", tags=["notifications"])
 audit_router = APIRouter(prefix="/audit", tags=["audit"])
+
+
+@dashboard_router.get("")
+def dashboard(request: Request, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    from app.services.dashboard import build_dashboard
+
+    return render(
+        request, "dashboard/index.html", {"d": build_dashboard(db), "active": "dashboard"}
+    )
 
 
 @operations_router.get("")

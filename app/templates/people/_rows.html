@@ -1,13 +1,13 @@
-{% from "macros/ui.html" import empty_row, pagination_row %}
+{% from "macros/ui.html" import empty_row, pagination_row, btn %}
 {% for p in page.items %}
-<tr class="hover:bg-gray-50">
-  <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">{{ p.name }}</td>
-  <td class="px-4 py-2 whitespace-nowrap">{{ p.employee_code }}</td>
-  <td class="px-4 py-2 whitespace-nowrap">{{ p.mobile }}</td>
-  <td class="px-4 py-2">{{ p.email }}</td>
-  <td class="px-4 py-2">{{ p.pincode }}</td>
-  <td class="px-4 py-2 whitespace-nowrap">{{ p.location.name }}</td>
-  <td class="px-4 py-2"><a href="/people/{{ p.id }}/edit" class="text-brand-600 hover:underline font-medium">Edit</a></td>
+<tr class="hover:bg-muted-hover">
+  <td class="{{ td_strong }}">{{ p.name }}</td>
+  <td class="{{ td }}">{{ p.employee_code }}</td>
+  <td class="{{ td }}">{{ p.mobile }}</td>
+  <td class="{{ td }}">{{ p.email }}</td>
+  <td class="{{ td }}">{{ p.pincode }}</td>
+  <td class="{{ td }}">{{ p.location.name }}</td>
+  <td class="{{ td }}">{{ btn('Edit', 'link', icon_name='pencil', href='/people/' ~ p.id ~ '/edit') }}</td>
 </tr>
 {% else %}
 {{ empty_row(7, "No matching records found." if q else "No people added yet.") }}

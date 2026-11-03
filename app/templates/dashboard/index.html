@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import page_header, stat_card, card, bare_table, empty_row, empty_state, badge, btn %}
+{% block title %}Dashboard{% endblock %}
+{% block crumb %}Overview{% endblock %}
+{% block content %}
+{% call page_header("Dashboard", "A live snapshot of your assets, assignments and warranties.") %}
+  {{ btn('Check Out', 'primary', icon_name='log-out', href='/checkout') }}
+  {{ btn('Add Device', 'secondary', icon_name='circle-plus', href='/assets/new') }}
+{% endcall %}
+
+<div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+  {{ stat_card('Total assets', d.counts['all'], 'package', '/assets') }}
+  {{ stat_card('Available', d.counts['available'], 'check', '/assets?status=available') }}
+  {{ stat_card('Checked out', d.counts['checked_out'], 'log-out', '/checkin') }}
+  {{ stat_card('Maintenance', d.counts['under_maintenance'], 'wrench', '/assets?status=under_maintenance') }}
+  {{ stat_card('People', d.people, 'users', '/people') }}
+  {{ stat_card('Locations', d.locations, 'building', '/locations') }}
+</div>
+
+<div class="grid lg:grid-cols-3 gap-4 mb-6">
+  {% call card('Assets by status', 'Current inventory split') %}
+    {% if d.counts['all'] %}
+    <div class="flex flex-col justify-center items-center">
+      <div id="chart-status"></div>
+      <ul class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-[13px] text-muted-foreground-2">
+        {% for key in d.chart.status.slugs %}
+        <li class="inline-flex items-center">
+          <span class="size-2.5 inline-block rounded-xs me-2 {{ {'available': 'bg-teal-500', 'checked_out': 'bg-blue-500', 'under_maintenance': 'bg-yellow-500', 'retired': 'bg-gray-400'}[key] }}"></span>
+          {{ status_labels[key] }} ({{ d.counts[key] }})
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% else %}{{ empty_state('No assets found.') }}{% endif %}
+  {% endcall %}
+
+  <div class="lg:col-span-2">
+    {% call card('Check-outs and check-ins', 'Last 14 days', cls='h-full') %}
+      {% if d.counts['all'] %}<div id="chart-trend"></div>{% else %}{{ empty_state('No activity yet.') }}{% endif %}
+    {% endcall %}
+  </div>
+</div>
+
+<div class="grid lg:grid-cols-3 gap-4 mb-6">
+  {% call card('Assets by type', 'Laptops, monitors and more') %}
+    {% if d.chart.types.series %}<div id="chart-types"></div>{% else %}{{ empty_state('No assets found.') }}{% endif %}
+  {% endcall %}
+
+  <div class="lg:col-span-2">
+    {% call card('Warranty nearby expiry', d.expiring_count ~ ' device(s) within 90 days', cls='h-full', body_cls='') %}
+      {% call bare_table(['Asset Tag ID','Brand / Model','Warranty Expiry','Days Remaining']) %}
+            {% for a, days in d.expiring %}
+            <tr>
+              <td class="{{ td_strong }}">{{ a.asset_tag_id }}</td>
+              <td class="{{ td }}">{{ a.brand }} {{ a.model }}</td>
+              <td class="{{ td }}">{{ a.warranty_expiry|d }}</td>
+              <td class="{{ td }}">{% if days < 0 %}{{ badge('expired', 'Expired ' ~ (-days) ~ 'd ago') }}{% elif days <= 30 %}{{ badge('warning', days ~ ' days') }}{% else %}{{ badge('info', days ~ ' days') }}{% endif %}</td>
+            </tr>
+            {% else %}
+            {{ empty_row(4, "No upcoming warranty expirations.") }}
+            {% endfor %}
+          {% endcall %}
+    {% endcall %}
+  </div>
+</div>
+
+{% call card('Latest operations', 'Most recent activity', body_cls='') %}
+  {% call bare_table(['Date & Time','Operation','Asset Tag ID','Employee','User']) %}
+        {% for log, tag, employee, location, user_name in d.recent %}
+        <tr>
+          <td class="{{ td }}">{{ log.created_at|dt }}</td>
+          <td class="{{ td_strong }}">{{ log.operation_type }}</td>
+          <td class="{{ td }}">{{ tag|dash }}</td>
+          <td class="{{ td }}">{{ employee|dash }}</td>
+          <td class="{{ td }}">{{ user_name|dash }}</td>
+        </tr>
+        {% else %}
+        {{ empty_row(5, "No operations recorded yet.") }}
+        {% endfor %}
+      {% endcall %}
+{% endcall %}
+
+<script id="dashboard-data" type="application/json">{{ d.chart|tojson }}</script>
+{% endblock %}
+{% block scripts %}<script src="/static/js/vendor/apexcharts.min.js"></script><script type="module" src="/static/js/dashboard.js"></script>{% endblock %}
+
+
+

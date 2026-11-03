@@ -24,7 +24,7 @@ log = get_logger("auth")
 def _safe_next(value: str | None) -> str:
     if value and value.startswith("/") and not value.startswith("//") and "\\" not in value:
         return value
-    return "/assets"
+    return "/dashboard"
 
 
 @router.get("/login")
@@ -78,3 +78,4 @@ def login_redirect_url(request: Request, expired: bool) -> str:
     if expired:
         params.append("expired=1")
     return url + ("?" + "&".join(params) if params else "")
+

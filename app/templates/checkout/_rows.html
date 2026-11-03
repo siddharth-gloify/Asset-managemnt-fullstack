@@ -1,12 +1,12 @@
-{% from "macros/ui.html" import badge, photo, empty_row, pagination_row %}
+{% from "macros/ui.html" import badge, photo, empty_row, pagination_row, btn, checkbox %}
 {% for a in page.items %}
-<tr class="hover:bg-gray-50">
-  <td class="px-4 py-2"><input type="checkbox" class="row-select rounded border-gray-300 text-brand-600 focus:ring-brand-500" data-id="{{ a.id }}" aria-label="Select {{ a.asset_tag_id }}"></td>
-  <td class="px-4 py-2">{{ photo(a) }}</td>
-  <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">{{ a.asset_tag_id }}</td>
-  <td class="px-4 py-2">{{ a.description }}</td>
-  <td class="px-4 py-2">{{ badge(a.status) }}</td>
-  <td class="px-4 py-2"><button type="button" hx-get="/assets/{{ a.id }}" hx-target="#modal-body" class="text-brand-600 hover:underline font-medium">View</button></td>
+<tr class="hover:bg-muted-hover">
+  <td class="{{ td }}">{{ checkbox('Select ' ~ a.asset_tag_id, 'data-id="' ~ a.id ~ '"', 'row-select') }}</td>
+  <td class="px-5 py-2">{{ photo(a) }}</td>
+  <td class="{{ td_strong }}">{{ a.asset_tag_id }}</td>
+  <td class="px-5 py-3 text-sm text-foreground">{{ a.description }}</td>
+  <td class="{{ td }}">{{ badge(a.status) }}</td>
+  <td class="{{ td }}">{{ btn('View', 'link', icon_name='eye', attrs='hx-get="/assets/' ~ a.id ~ '" hx-target="#modal-body"') }}</td>
 </tr>
 {% else %}
 {{ empty_row(6, "No matching records found." if q else "No available assets found.") }}

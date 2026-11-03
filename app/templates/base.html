@@ -1,64 +1,87 @@
+{% from "macros/ui.html" import btn, nav_item, nav_section, user_menu, modal_shell %}
+{% from "macros/icons.html" import icon %}
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-50">
+<html lang="en" class="relative min-h-full">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>{% block title %}{% endblock %}{% if self.title()|trim %} · {% endif %}{{ app_name }}</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/static/css/app.css">
+  <script type="importmap">{"imports": {"ApexCharts": "/static/js/vendor/apexcharts-shim.js"}}</script>
 </head>
-<body class="min-h-full text-gray-800 antialiased">
+<body class="min-h-full bg-gray-50 text-foreground antialiased">
 {% set user = request.state.user %}
-<header class="sticky top-0 z-40 w-full bg-white border-b border-gray-200 text-sm">
-  <nav class="max-w-[96rem] mx-auto px-4 xl:flex xl:items-center xl:justify-between" aria-label="Global">
-    <div class="flex items-center justify-between py-3">
-      <a href="/assets" class="flex items-center gap-2 text-lg font-bold text-gray-900">
-        <span class="inline-flex size-8 items-center justify-center rounded-lg bg-brand-600 text-white text-sm">A</span>
-        <span>Assetify <span class="font-normal text-gray-500 text-sm">by GLOIFY</span></span>
+
+<!-- Sidebar -->
+<div id="app-sidebar" class="hs-overlay [--auto-close:lg] lg:block lg:translate-x-0 lg:inset-e-auto lg:bottom-0 w-64 hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform h-full hidden fixed top-0 inset-s-0 bottom-0 z-60 bg-sidebar border-e border-sidebar-line" role="dialog" tabindex="-1" aria-label="Sidebar">
+  <div class="relative flex flex-col h-full max-h-full">
+    <header class="p-4 flex justify-between items-center gap-x-2">
+      <a class="flex items-center gap-x-2 flex-none font-semibold text-xl text-layer-foreground focus:outline-hidden focus:opacity-80" href="/dashboard" aria-label="Assetify by GLOIFY">
+        <span class="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">{{ icon('package', 'size-4') }}</span>
+        <span>Assetify <span class="block text-xs font-normal text-muted-foreground-1 -mt-1">by GLOIFY</span></span>
       </a>
-      <button type="button" class="hs-collapse-toggle xl:hidden size-9 inline-flex justify-center items-center rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
-              data-hs-collapse="#main-nav" aria-controls="main-nav" aria-label="Toggle navigation">
-        <svg class="hs-collapse-open:hidden size-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-        <svg class="hs-collapse-open:block hidden size-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div id="main-nav" class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow xl:block">
-      <div class="flex flex-col gap-1 pb-3 xl:pb-0 xl:flex-row xl:items-center xl:justify-end">
-        {% for key, label, url in nav_items %}
-        <a href="{{ url }}" {% if active == key %}aria-current="page"{% endif %}
-           class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == key %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{{ label }}</a>
-        {% endfor %}
-        <span class="hidden xl:block w-px h-6 bg-gray-200 mx-1"></span>
-        <div id="bell" hx-get="/notifications/badge" hx-trigger="load, every 60s" hx-swap="outerHTML" class="px-3 py-2 text-gray-600">Notifications</div>
-        <a href="/audit" class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == 'audit' %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Audit</a>
-        {% if user and user.role == 'admin' %}
-        <a href="/users" class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == 'users' %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Users</a>
-        {% endif %}
-        <a href="/profile" class="px-3 py-2 rounded-lg font-medium whitespace-nowrap {% if active == 'profile' %}bg-brand-50 text-brand-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Profile</a>
-        <form method="post" action="/logout"><button type="submit" class="w-full text-start px-3 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-100 whitespace-nowrap">Log Out</button></form>
+      <div class="lg:hidden -me-2">
+        {{ btn('', 'secondary', icon_name='x', attrs='data-hs-overlay="#app-sidebar" aria-label="Close sidebar"', cls='size-7 !p-0 rounded-full') }}
       </div>
-    </div>
-  </nav>
-</header>
-
-<main class="max-w-[96rem] mx-auto px-4 py-6">
-  {% block content %}{% endblock %}
-</main>
-
-<footer class="max-w-[96rem] mx-auto px-4 pb-8 text-xs text-gray-400">{{ app_name }}</footer>
-
-{# Shared modal shell: partials are swapped into #modal-body and opened via HSOverlay #}
-<div id="app-modal" class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none" role="dialog" tabindex="-1" aria-labelledby="modal-title">
-  <div class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-300 mt-0 opacity-0 ease-out transition-all sm:max-w-3xl sm:w-full m-3 sm:mx-auto">
-    <div id="modal-body" class="pointer-events-auto bg-white rounded-xl shadow-xl border border-gray-200"></div>
+    </header>
+    <nav class="h-full overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-track]:bg-scrollbar-track [&::-webkit-scrollbar-thumb]:bg-scrollbar-thumb">
+      <div class="pb-4 px-2 w-full flex flex-col flex-wrap">
+        <ul class="space-y-1">
+          {% for title, items in nav_sections %}
+          {{ nav_section(title) }}
+          {% for key, label, url, icon_name, extra in items %}
+          {% call nav_item(label, url, icon_name, active=(active == key or active in extra)) %}
+            {% if key == 'notifications' %}<span id="bell-badge" class="ms-auto" hx-get="/notifications/badge" hx-trigger="load, every 60s" hx-swap="outerHTML"></span>{% endif %}
+          {% endcall %}
+          {% endfor %}
+          {% endfor %}
+          {{ nav_section('Account') }}
+          {% for key, label, url, icon_name, extra in admin_nav %}
+          {% if key != 'users' or (user and user.role == 'admin') %}
+          {{ nav_item(label, url, icon_name, active=(active == key)) }}
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </nav>
   </div>
 </div>
+<!-- End Sidebar -->
 
-<div id="toast-area" class="fixed top-4 end-4 z-[90] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]" aria-live="polite"></div>
+<div class="lg:ps-64 flex flex-col min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 inset-x-0 z-50 flex flex-wrap lg:flex-nowrap w-full py-2.5 bg-navbar border-b border-navbar-line text-sm">
+    <nav class="w-full px-4 sm:px-6 flex items-center justify-between gap-x-3" aria-label="Global">
+      <div class="flex items-center gap-x-3">
+        {{ btn('', 'secondary', icon_name='menu', attrs='aria-haspopup="dialog" aria-expanded="false" aria-controls="app-sidebar" aria-label="Toggle navigation" data-hs-overlay="#app-sidebar"', cls='lg:hidden size-9 !p-0') }}
+        <span class="hidden sm:inline text-muted-foreground-1">{% block crumb %}{% endblock %}</span>
+      </div>
+      <div class="flex items-center gap-x-2">
+        {{ btn('', 'secondary', icon_name='bell', href='/notifications', attrs='aria-label="Notifications"', cls='size-9 !p-0') }}
+        {% if user %}{{ user_menu(user.name, user.email) }}{% endif %}
+      </div>
+    </nav>
+  </header>
+  <!-- End Header -->
+
+  <main class="grow w-full max-w-340 mx-auto px-4 sm:px-6 py-6">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="w-full px-4 sm:px-6 pb-6 text-xs text-muted-foreground-1">{{ app_name }}</footer>
+</div>
+
+{{ modal_shell('app-modal') }}
+
+<div id="toast-area" class="fixed top-4 end-4 z-90 flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]" aria-live="polite"></div>
 <script id="flash-data" type="application/json">{{ get_flashes(request)|tojson }}</script>
 
+<script src="/static/js/vendor/lodash.min.js"></script>
 <script src="/static/js/htmx.min.js"></script>
 <script src="/static/js/preline.js"></script>
 <script src="/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
+
