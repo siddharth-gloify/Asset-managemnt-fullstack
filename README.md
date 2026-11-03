@@ -28,7 +28,7 @@ Lint: `uv run ruff check .`
 | Variable | Purpose |
 |---|---|
 | `DATABASE_URL` | Postgres URL. On Vercel use the Neon **pooled** connection string. |
-| `SEED_USERS` | `Name\|email\|password,...` logins; `seed-users` creates/updates them (re-run after editing). |
+| `SEED_USERS` | `Name\|email\|password,...` logins; `seed-users` creates missing ones and never overwrites passwords changed in the app (`--reset-passwords` forces it). |
 | `SECRET_KEY` | Signs the session cookie. |
 | `FIELD_ENCRYPTION_KEY` | Fernet key for stored "last password" values. |
 | `ENV` | `dev` or `prod`. |

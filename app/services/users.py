@@ -33,8 +33,14 @@ def _email_taken(db: Session, email: str, exclude_id: int | None = None) -> bool
     return db.scalar(stmt) is not None
 
 
-def sync_seed_users(db: Session, rows: list[tuple[str, str, str]]) -> list[str]:
-    """Create or update users from (name, email, password) rows, e.g. the SEED_USERS env var."""
+def sync_seed_users(
+    db: Session, rows: list[tuple[str, str, str]], reset_passwords: bool = False
+) -> list[str]:
+    """Create missing users from (name, email, password) rows (the SEED_USERS env var).
+
+    Existing users are left alone, so passwords changed in the app survive; reset_passwords=True
+    overwrites them with the env values.
+    """
     done = []
     for name, email, password in rows:
         user = db.scalar(select(User).where(func.lower(User.email) == email.lower()))
@@ -42,11 +48,12 @@ def sync_seed_users(db: Session, rows: list[tuple[str, str, str]]) -> list[str]:
             user = User(name=name, email=email, password_hash=hash_password(password), role="admin")
             db.add(user)
             done.append(f"created {email}")
-        else:
-            user.name = name
+        elif reset_passwords:
             user.is_active = True
             user.password_hash = hash_password(password)
-            done.append(f"updated {email}")
+            done.append(f"password reset {email}")
+        else:
+            done.append(f"kept {email} (already exists)")
     db.flush()
     return done
 

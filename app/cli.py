@@ -22,14 +22,14 @@ def init_database(_args) -> int:
     return 0
 
 
-def seed_users(_args) -> int:
+def seed_users(args) -> int:
     rows = get_settings().seed_user_list
     if not rows:
         print("SEED_USERS is empty. Set it in .env as Name|email|password,Name|email|password")
         return 1
     init_db()
     with SessionLocal() as db:
-        for line in users.sync_seed_users(db, rows):
+        for line in users.sync_seed_users(db, rows, args.reset_passwords):
             print(line)
         db.commit()
     return 0
@@ -86,9 +86,9 @@ def main(argv: list[str] | None = None) -> int:
     configure_logging()
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("seed-users", help="Create/update logins from SEED_USERS in .env").set_defaults(
-        func=seed_users
-    )
+    p = sub.add_parser("seed-users", help="Create missing logins from SEED_USERS in .env")
+    p.add_argument("--reset-passwords", action="store_true", help="Overwrite existing passwords too")
+    p.set_defaults(func=seed_users)
     sub.add_parser("init-db", help="Create database tables").set_defaults(func=init_database)
     sub.add_parser("seed-demo", help="Insert sample data").set_defaults(func=seed_demo)
     sub.add_parser("run-warranty-job", help="Create warranty notifications now").set_defaults(

@@ -13,7 +13,7 @@ from app.main import app
 from app.models import Asset, AssetAssignment, Notification
 from app.schemas.common import validate_form
 from app.schemas.forms import CheckinForm, CheckoutForm
-from app.services import assignments
+from app.services import assignments, users
 from app.services.common import FormError
 from app.services.warranty import run_warranty_job
 from tests.conftest import PASSWORD, asset_data
@@ -234,6 +234,20 @@ def test_no_signup_and_login_by_username(client, db):
     assert client.post("/users/new", data={"name": "X", "email": "x@example.com", "password": "longenough1"}).status_code in (404, 405)
     c2 = TestClient(app, client=("10.0.0.5", 2), follow_redirects=False)
     assert c2.post("/login", data={"email": "admin", "password": PASSWORD}).status_code == 303
+
+
+def test_changed_password_survives_seed_users(client, db):
+    r = client.post(
+        "/profile/password",
+        data={"current_password": PASSWORD, "new_password": "brandnew-pass1", "confirm_password": "brandnew-pass1"},
+    )
+    assert r.status_code in (200, 303)
+    db.expire_all()
+    users.sync_seed_users(db, [("Admin", "admin@example.com", PASSWORD)])
+    db.commit()
+    c2 = TestClient(app, client=("10.0.0.5", 3), follow_redirects=False)
+    assert c2.post("/login", data={"email": "admin", "password": "brandnew-pass1"}).status_code == 303
+    assert c2.post("/login", data={"email": "admin", "password": PASSWORD}).status_code == 401
 
 
 def test_audit_logs_login_logout_profile(client):
