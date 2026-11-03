@@ -1,3 +1,10 @@
 {
-  "crons": [{ "path": "/internal/cron/warranty", "schedule": "30 2 * * *" }]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [{ "path": "/internal/cron/warranty", "schedule": "30 2 * * *" }],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
+    }
+  ]
 }

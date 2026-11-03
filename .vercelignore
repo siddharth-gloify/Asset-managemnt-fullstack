@@ -1,9 +1,14 @@
 .env
+.env.*
+!.env.example
 .venv
+.git
+.claude
 node_modules
 frontend
 tests
 scripts
+docs
 docker-compose.yml
 Makefile
 .pytest_cache

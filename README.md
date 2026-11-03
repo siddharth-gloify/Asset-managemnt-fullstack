@@ -41,20 +41,30 @@ Lint: `uv run ruff check .`
 
 ## Deploy on Vercel
 
-1. Install the CLI: `npm i -g vercel`, then `vercel login`.
-2. Use your Postgres database (Supabase transaction pooler string, port 6543) as `DATABASE_URL`.
-3. Create the tables and the first admin from your machine (the `.env` file already points at the database):
+1. Install the CLI (`npm i -g vercel`), then `vercel login`.
+2. Database: the Supabase **transaction pooler** string (port 6543) goes in `.env` as `DATABASE_URL`. Create the tables
+   and the first admin from your machine:
    ```bash
    uv run python -m app.cli init-db
    uv run python -m app.cli create-admin --name "Admin" --email you@company.com
    ```
    Tables are created with `create_all`: it adds missing tables but never alters existing ones, so schema
    changes later mean editing the table by hand (or dropping and recreating while the data is disposable).
-4. `vercel link`, then add the environment variables above (`vercel env add ...`) for Production:
-   `DATABASE_URL, SECRET_KEY, FIELD_ENCRYPTION_KEY, ENV=prod, ALLOWED_IPS, CLIENT_IP_HEADER=x-vercel-forwarded-for, SESSION_HTTPS_ONLY=true, CRON_SECRET`.
+3. Generate production settings (fresh secrets, your office IPs) into the git-ignored `.env.vercel`:
+   ```bash
+   uv run python scripts/make_vercel_env.py --allowed-ips 203.0.113.10/32
+   ```
+4. Link the project and push those variables to Production:
+   ```bash
+   vercel link
+   uv run python scripts/push_vercel_env.py
+   ```
 5. `vercel deploy --prod`. The built CSS and vendored JS are committed under `app/static`, so no Node build runs on Vercel
-   (re-run `cd frontend && npm run build` after changing templates' Tailwind classes).
-6. Check `https://<your-domain>/healthz` from an allowed IP.
+   (re-run `cd frontend && npm run build` after changing templates' Tailwind classes). `index.py` is the entrypoint.
+6. Check `https://<your-domain>/healthz` from an allowed IP, then sign in.
+
+The app refuses to start in production with an empty `ALLOWED_IPS`; if your office IP changes, update that variable
+(`vercel env add ALLOWED_IPS production --force`) and redeploy.
 
 Back up `FIELD_ENCRYPTION_KEY` separately: without it stored device passwords are unrecoverable.
 
@@ -63,7 +73,7 @@ Back up `FIELD_ENCRYPTION_KEY` separately: without it stored device passwords ar
 - **Scheduler:** Vercel Cron (`vercel.json`, 02:30 UTC = 08:00 IST) calls `/internal/cron/warranty` with `CRON_SECRET`, instead of in-process APScheduler. `python -m app.cli run-warranty-job` still works. Cron timing is UTC, so adjust the schedule if `APP_TIMEZONE` changes.
 - **Photos:** stored (re-encoded, max 1600px) in Postgres and served via the authenticated `/media/{name}` route; max 4 MB because Vercel caps request bodies at 4.5 MB.
 - **Logging:** JSON to stdout only (serverless has no persistent disk); read it with `vercel logs`.
-- **No Docker/nginx/backup script:** Neon provides backups/point-in-time restore. `docker-compose.yml` is only the local dev database.
+- **No Docker/nginx/backup script:** use Supabase's backups (daily on paid plans; export manually on the free plan). `docker-compose.yml` is only the local dev database.
 - **IP allowlist:** enforced in the app using Vercel's `x-vercel-forwarded-for`. For a stronger layer, add a Vercel Firewall rule too.
 - Inline "add person / location" in the check-out popup opens an inline panel inside the popup rather than a second modal.
 
