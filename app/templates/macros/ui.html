@@ -7,8 +7,8 @@
   'primary': 'bg-primary border border-primary-line text-primary-foreground hover:bg-primary-hover focus:bg-primary-focus',
   'secondary': 'bg-layer border border-layer-line text-layer-foreground shadow-2xs hover:bg-layer-hover focus:bg-layer-focus',
   'danger': 'bg-red-600 border border-transparent text-white hover:bg-red-700 focus:bg-red-700',
-  'danger-soft': 'bg-red-100 border border-transparent text-red-800 hover:bg-red-200 focus:bg-red-200',
-  'warning-soft': 'bg-yellow-100 border border-transparent text-yellow-800 hover:bg-yellow-200 focus:bg-yellow-200',
+  'danger-soft': 'bg-red-100 border border-transparent text-red-800 hover:bg-red-200 focus:bg-red-200 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 dark:focus:bg-red-500/30',
+  'warning-soft': 'bg-yellow-100 border border-transparent text-yellow-800 hover:bg-yellow-200 focus:bg-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-400 dark:hover:bg-yellow-500/30 dark:focus:bg-yellow-500/30',
   'link': 'border border-transparent font-semibold text-primary hover:text-primary-hover focus:text-primary-focus',
 } -%}
 {%- set sizes = {'sm': 'py-1.5 px-2.5', 'md': 'py-2 px-3', 'lg': 'py-2.5 px-4'} -%}
@@ -299,6 +299,16 @@
 
 {% macro nav_section(title) -%}
 <li class="pt-4 pb-1 px-2.5 text-xs uppercase tracking-wide text-muted-foreground-1">{{ title }}</li>
+{%- endmacro %}
+
+{# ---------- theme toggle (docs/preline/dark-mode.html) ---------- #}
+{% macro theme_toggle() -%}
+<button type="button" class="hs-dark-mode-active:hidden block hs-dark-mode size-9 inline-flex justify-center items-center rounded-lg bg-layer border border-layer-line text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus" data-hs-theme-click-value="dark" aria-label="Switch to dark mode">
+  <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+</button>
+<button type="button" class="hs-dark-mode-active:block hidden hs-dark-mode size-9 inline-flex justify-center items-center rounded-lg bg-layer border border-layer-line text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus" data-hs-theme-click-value="light" aria-label="Switch to light mode">
+  <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+</button>
 {%- endmacro %}
 
 {# ---------- dropdown (docs/preline/dropdown.html) ---------- #}

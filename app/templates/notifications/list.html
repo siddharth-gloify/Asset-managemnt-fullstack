@@ -11,8 +11,8 @@
 {% call card(body_cls='') %}
   <ul class="divide-y divide-card-divider">
     {% for n in page.items %}
-    <li class="flex items-start gap-3 p-4 {% if not n.is_read %}bg-primary-50/60{% endif %}">
-      <span class="mt-1.5 size-2 rounded-full shrink-0 {% if n.is_read %}bg-gray-300{% else %}bg-primary{% endif %}"></span>
+    <li class="flex items-start gap-3 p-4 {% if not n.is_read %}bg-primary-50/60 dark:bg-primary-500/10{% endif %}">
+      <span class="mt-1.5 size-2 rounded-full shrink-0 {% if n.is_read %}bg-gray-300 dark:bg-neutral-600{% else %}bg-primary{% endif %}"></span>
       <div class="grow min-w-0">
         <p class="text-xs uppercase tracking-wide text-muted-foreground-1">{{ labels.get(n.type, n.type) }} · {{ n.created_at|dt }}</p>
         <p class="text-sm text-foreground mt-0.5">{% if n.link %}<a href="{{ n.link }}" class="hover:underline">{{ n.message }}</a>{% else %}{{ n.message }}{% endif %}</p>

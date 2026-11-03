@@ -1,17 +1,18 @@
-{% from "macros/ui.html" import btn, nav_item, nav_section, user_menu, modal_shell %}
+{% from "macros/ui.html" import btn, nav_item, nav_section, user_menu, modal_shell, theme_toggle %}
 {% from "macros/icons.html" import icon %}
 <!DOCTYPE html>
 <html lang="en" class="relative min-h-full">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
+  <script src="/static/js/theme-init.js"></script>
   <title>{% block title %}{% endblock %}{% if self.title()|trim %} · {% endif %}{{ app_name }}</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/static/css/app.css">
   <script type="importmap">{"imports": {"ApexCharts": "/static/js/vendor/apexcharts-shim.js"}}</script>
 </head>
-<body class="min-h-full bg-gray-50 text-foreground antialiased">
+<body class="min-h-full bg-gray-50 dark:bg-neutral-900 text-foreground antialiased">
 {% set user = request.state.user %}
 
 <!-- Sidebar -->
@@ -59,6 +60,7 @@
         <span class="hidden sm:inline text-muted-foreground-1">{% block crumb %}{% endblock %}</span>
       </div>
       <div class="flex items-center gap-x-2">
+        {{ theme_toggle() }}
         {{ btn('', 'secondary', icon_name='bell', href='/notifications', attrs='aria-label="Notifications"', cls='size-9 !p-0') }}
         {% if user %}{{ user_menu(user.name, user.email) }}{% endif %}
       </div>

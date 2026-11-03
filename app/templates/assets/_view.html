@@ -34,7 +34,7 @@
   {% if assignment %}
   <section>
     <h4 class="text-sm font-semibold text-foreground mb-2">Current assignment</h4>
-    <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4 rounded-lg bg-yellow-100/60 border border-yellow-200 p-4">
+    <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4 rounded-lg bg-yellow-100/60 border border-yellow-200 dark:bg-yellow-500/10 dark:border-yellow-900 p-4">
       {{ detail('Assigned To', employee.name) }}
       {{ detail('Employee ID', employee.employee_code) }}
       {{ detail('Mobile Number', employee.mobile) }}

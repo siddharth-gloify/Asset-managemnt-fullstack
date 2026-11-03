@@ -1,0 +1,23 @@
+<!-- Official Preline UI 5.0 markup: https://preline.co/docs/dark-mode.html -->
+<!-- Tailwind v4: add to input.css -->
+<!-- @custom-variant dark (&:where(.dark, .dark *)); -->
+
+<!-- Head script: app/static/js/theme-init.js (applies the saved hs_theme before first paint) -->
+
+<!-- Toggle: icon buttons with data-hs-theme-click-value -->
+<button type="button" class="hs-dark-mode-active:hidden block hs-dark-mode font-medium text-stone-800 rounded-full hover:bg-stone-200 focus:outline-hidden focus:bg-stone-200 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800" data-hs-theme-click-value="dark">
+  <span class="group inline-flex shrink-0 justify-center items-center size-7">
+    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+    </svg>
+  </span>
+</button>
+<button type="button" class="hs-dark-mode-active:block hidden hs-dark-mode font-medium text-stone-800 rounded-full hover:bg-stone-200 focus:outline-hidden focus:bg-stone-200 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800" data-hs-theme-click-value="light">
+  <span class="group inline-flex shrink-0 justify-center items-center size-7">
+    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  </span>
+</button>

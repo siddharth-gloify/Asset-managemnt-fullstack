@@ -3,6 +3,8 @@
 @import "preline/variants.css";
 @import "preline/theme.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source "../node_modules/preline/dist/*.js";
 @source "../../app/templates";
 @source "../../app/static/js/app.js";
