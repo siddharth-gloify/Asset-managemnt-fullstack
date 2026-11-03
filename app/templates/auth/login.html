@@ -1,11 +1,10 @@
 {% extends "bare.html" %}
-{% from "macros/ui.html" import input, hidden, btn, alert, card %}
-{% from "macros/icons.html" import icon %}
+{% from "macros/ui.html" import input, hidden, btn, alert, card, logo %}
 {% block title %}Sign in{% endblock %}
 {% block content %}
 <div class="w-full max-w-sm">
   <div class="text-center mb-6">
-    <span class="inline-flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">{{ icon('package', 'size-6') }}</span>
+    {{ logo('size-20', 'p-2') }}
     <h1 class="mt-4 text-2xl font-semibold text-foreground">Assetify <span class="font-normal text-muted-foreground-1 text-lg">by GLOIFY</span></h1>
     <p class="mt-1 text-sm text-muted-foreground-1">Sign in to manage your assets</p>
   </div>

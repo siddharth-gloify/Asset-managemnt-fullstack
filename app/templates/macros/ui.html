@@ -227,6 +227,12 @@
 {% endif %}
 {%- endmacro %}
 
+{# ---------- brand logo (app/static/brand/logo.svg, from asset-management-symbol) ----------
+   Sits on a white tile so the navy artwork keeps its contrast in dark mode. #}
+{% macro logo(size='size-9', pad='p-1') -%}
+<span class="inline-flex shrink-0 items-center justify-center rounded-xl bg-white ring-1 ring-black/10 shadow-2xs {{ size }} {{ pad }}"><img src="/static/brand/logo.svg" alt="Assetify logo" class="size-full object-contain"></span>
+{%- endmacro %}
+
 {# ---------- misc ---------- #}
 {% macro photo(asset, size='size-10') -%}
 {% if asset.photo_name %}

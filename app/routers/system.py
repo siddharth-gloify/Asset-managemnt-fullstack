@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import secrets
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
@@ -28,6 +29,15 @@ def healthz(db: Session = Depends(get_db)):
         log.exception("healthcheck_failed")
         return JSONResponse({"status": "error", "db": "down"}, status_code=503)
     return {"status": "ok", "db": "up"}
+
+
+BRAND_DIR = Path(__file__).resolve().parent.parent / "static" / "brand"
+
+
+@router.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    # Browsers request /favicon.ico regardless of <link rel="icon">.
+    return FileResponse(BRAND_DIR / "favicon.ico", media_type="image/x-icon")
 
 
 @router.get("/media/{name}")

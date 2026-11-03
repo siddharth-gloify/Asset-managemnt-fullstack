@@ -1,4 +1,4 @@
-{% from "macros/ui.html" import btn, nav_item, nav_section, user_menu, modal_shell, theme_toggle %}
+{% from "macros/ui.html" import btn, nav_item, nav_section, user_menu, modal_shell, theme_toggle, logo %}
 {% from "macros/icons.html" import icon %}
 <!DOCTYPE html>
 <html lang="en" class="relative min-h-full">
@@ -8,7 +8,7 @@
   <meta name="color-scheme" content="light dark">
   <script src="/static/js/theme-init.js"></script>
   <title>{% block title %}{% endblock %}{% if self.title()|trim %} · {% endif %}{{ app_name }}</title>
-  <link rel="icon" href="data:,">
+  {% include "partials/head_brand.html" %}
   <link rel="stylesheet" href="/static/css/app.css">
   <script type="importmap">{"imports": {"ApexCharts": "/static/js/vendor/apexcharts-shim.js"}}</script>
 </head>
@@ -20,7 +20,7 @@
   <div class="relative flex flex-col h-full max-h-full">
     <header class="p-4 flex justify-between items-center gap-x-2">
       <a class="flex items-center gap-x-2 flex-none font-semibold text-xl text-layer-foreground focus:outline-hidden focus:opacity-80" href="/dashboard" aria-label="Assetify by GLOIFY">
-        <span class="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">{{ icon('package', 'size-4') }}</span>
+        {{ logo('size-10') }}
         <span>Assetify <span class="block text-xs font-normal text-muted-foreground-1 -mt-1">by GLOIFY</span></span>
       </a>
       <div class="lg:hidden -me-2">

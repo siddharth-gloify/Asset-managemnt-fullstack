@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light dark">
   <script src="/static/js/theme-init.js"></script>
   <title>{% block title %}{% endblock %} · {{ app_name }}</title>
-  <link rel="icon" href="data:,">
+  {% include "partials/head_brand.html" %}
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body class="min-h-full flex items-center justify-center p-4 bg-gray-50 dark:bg-neutral-900 text-foreground antialiased">

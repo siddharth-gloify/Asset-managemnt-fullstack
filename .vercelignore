@@ -9,3 +9,4 @@ Makefile
 .pytest_cache
 .ruff_cache
 BRD.md
+asset-management-symbol
