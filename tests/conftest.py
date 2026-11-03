@@ -17,13 +17,14 @@ from datetime import date, timedelta  # noqa: E402
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy import text  # noqa: E402
+from sqlalchemy import select, text  # noqa: E402
 
 from app.config import get_settings  # noqa: E402
 from app.db import SessionLocal, get_engine, init_db  # noqa: E402
 from app.main import app  # noqa: E402
+from app.models import User  # noqa: E402
 from app.schemas.common import validate_form  # noqa: E402
-from app.schemas.forms import AssetForm, LocationForm, PersonForm, UserCreateForm  # noqa: E402
+from app.schemas.forms import AssetForm, LocationForm, PersonForm  # noqa: E402
 from app.services import assets, locations, people, users  # noqa: E402
 
 PASSWORD = "Test#Pass123"
@@ -62,12 +63,9 @@ def db():
 
 @pytest.fixture
 def admin(db):
-    form, _ = validate_form(
-        UserCreateForm, {"name": "Admin", "email": "admin@example.com", "password": PASSWORD}
-    )
-    user = users.create_user(db, None, form)
+    users.sync_seed_users(db, [("Admin", "admin@example.com", PASSWORD)])
     db.commit()
-    return user
+    return db.scalar(select(User).where(User.email == "admin@example.com"))
 
 
 @pytest.fixture

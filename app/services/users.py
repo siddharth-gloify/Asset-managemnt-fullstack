@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from sqlalchemy import func, select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import MAX_ACTIVE_USERS
 from app.core.security import hash_password, verify_password
 from app.models import User
-from app.schemas.forms import ChangePasswordForm, ProfileForm, UserCreateForm
+from app.schemas.forms import ChangePasswordForm, ProfileForm
 from app.services import audit
 from app.services.common import FormError, NotFound, now_utc
 
@@ -34,24 +33,22 @@ def _email_taken(db: Session, email: str, exclude_id: int | None = None) -> bool
     return db.scalar(stmt) is not None
 
 
-def create_user(db: Session, actor: User | None, form: UserCreateForm) -> User:
-    if active_count(db) >= MAX_ACTIVE_USERS:
-        raise FormError(f"The maximum of {MAX_ACTIVE_USERS} active users has been reached.")
-    if _email_taken(db, form.email):
-        raise FormError({"email": "A user with this email already exists."})
-    user = User(
-        name=form.name, email=form.email, password_hash=hash_password(form.password), role="admin"
-    )
-    db.add(user)
-    try:
-        db.flush()
-    except IntegrityError as exc:
-        db.rollback()
-        raise FormError({"email": "A user with this email already exists."}) from exc
-    audit.log(
-        db, actor, "User Created", "users", entity_type="user", entity_id=user.id, remarks=user.email
-    )
-    return user
+def sync_seed_users(db: Session, rows: list[tuple[str, str, str]]) -> list[str]:
+    """Create or update users from (name, email, password) rows, e.g. the SEED_USERS env var."""
+    done = []
+    for name, email, password in rows:
+        user = db.scalar(select(User).where(func.lower(User.email) == email.lower()))
+        if user is None:
+            user = User(name=name, email=email, password_hash=hash_password(password), role="admin")
+            db.add(user)
+            done.append(f"created {email}")
+        else:
+            user.name = name
+            user.is_active = True
+            user.password_hash = hash_password(password)
+            done.append(f"updated {email}")
+    db.flush()
+    return done
 
 
 def deactivate_user(db: Session, actor: User, user_id: int) -> User:
@@ -89,7 +86,12 @@ def reset_password(db: Session, actor: User, user_id: int, new_password: str) ->
 
 
 def authenticate(db: Session, email: str, password: str) -> User | None:
-    user = db.scalar(select(User).where(func.lower(User.email) == email.strip().lower()))
+    ident = email.strip().lower()
+    user = db.scalar(
+        select(User)
+        .where((func.lower(User.email) == ident) | (func.lower(User.name) == ident))
+        .order_by(User.id)
+    )
     if user is None or not user.is_active or not verify_password(user.password_hash, password):
         return None
     user.last_login_at = now_utc()

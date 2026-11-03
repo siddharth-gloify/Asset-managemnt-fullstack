@@ -28,6 +28,17 @@ class Settings(BaseSettings):
     session_https_only: bool = False
     cron_secret: str = ""
     session_idle_minutes: int = 30
+    # In-house logins, "Name|email|password" separated by commas; applied by `python -m app.cli seed-users`.
+    seed_users: str = ""
+
+    @property
+    def seed_user_list(self) -> list[tuple[str, str, str]]:
+        rows = []
+        for part in self.seed_users.split(","):
+            fields = [f.strip() for f in part.split("|")]
+            if len(fields) == 3 and all(fields):
+                rows.append((fields[0], fields[1], fields[2]))
+        return rows
 
     @property
     def is_prod(self) -> bool:

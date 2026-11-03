@@ -12,7 +12,7 @@ from app.core.templating import render
 from app.db import get_db
 from app.models import User
 from app.schemas.common import validate_form
-from app.schemas.forms import ChangePasswordForm, PasswordResetForm, ProfileForm, UserCreateForm
+from app.schemas.forms import ChangePasswordForm, PasswordResetForm, ProfileForm
 from app.services import users as svc
 from app.services.common import FormError
 
@@ -100,35 +100,6 @@ def list_users(
             "active": "users",
         },
     )
-
-
-@users_router.get("/new")
-def new_form(request: Request, user: User = Depends(require_admin)):
-    return render(request, "users/form.html", {"values": {}, "errors": {}, "active": "users"})
-
-
-@users_router.post("/new")
-async def create(
-    request: Request, user: User = Depends(require_admin), db: Session = Depends(get_db)
-):
-    data = await request.form()
-    form, errors = validate_form(UserCreateForm, data)
-    if form:
-        try:
-            created = svc.create_user(db, user, form)
-            db.commit()
-            log.info("user_created", target_user_id=created.id, user_id=user.id)
-            return redirect(request, "/users", f"User {created.name} created.")
-        except FormError as exc:
-            db.rollback()
-            errors = exc.errors
-    return render(
-        request,
-        "users/form.html",
-        {"values": {k: v for k, v in data.items() if k != "password"}, "errors": errors,
-         "active": "users"},
-        status=422,
-    )  # fmt: skip
 
 
 def _simple_action(request, db, user, fn, user_id, message):

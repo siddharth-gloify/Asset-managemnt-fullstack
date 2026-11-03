@@ -3,9 +3,7 @@
 {% block title %}Users{% endblock %}
 {% block crumb %}Users{% endblock %}
 {% block content %}
-{% call page_header("Users", active_count ~ " of " ~ max_users ~ " active users.") %}
-  {{ btn('Add user', 'primary', icon_name='user-plus', href='/users/new') }}
-{% endcall %}
+{% call page_header("Users", active_count ~ " of " ~ max_users ~ " accounts active. Accounts are fixed; there is no sign-up.") %}{% endcall %}
 {% call table_card(['Name','Email','Role','Status','Last Login','Actions']) %}
   {% for u in users %}
   <tr class="hover:bg-muted-hover">

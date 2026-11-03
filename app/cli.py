@@ -1,16 +1,16 @@
-"""Admin CLI: python -m app.cli <create-admin|seed-demo|run-warranty-job>."""
+"""Admin CLI: python -m app.cli <seed-demo|run-warranty-job>."""
 
 from __future__ import annotations
 
 import argparse
-import getpass
 import sys
 from datetime import date, timedelta
 
+from app.config import get_settings
 from app.core.logging import configure_logging
 from app.db import SessionLocal, init_db
 from app.schemas.common import validate_form
-from app.schemas.forms import AssetForm, LocationForm, PersonForm, UserCreateForm
+from app.schemas.forms import AssetForm, LocationForm, PersonForm
 from app.services import assets, locations, people, users
 from app.services.common import FormError
 from app.services.warranty import run_warranty_job
@@ -22,23 +22,16 @@ def init_database(_args) -> int:
     return 0
 
 
-def create_admin(args) -> int:
-    init_db()
-    password = args.password or getpass.getpass("Password (min 8 chars): ")
-    form, errors = validate_form(
-        UserCreateForm, {"name": args.name, "email": args.email, "password": password}
-    )
-    if form is None:
-        print("Invalid input:", errors)
+def seed_users(_args) -> int:
+    rows = get_settings().seed_user_list
+    if not rows:
+        print("SEED_USERS is empty. Set it in .env as Name|email|password,Name|email|password")
         return 1
+    init_db()
     with SessionLocal() as db:
-        try:
-            user = users.create_user(db, None, form)
-            db.commit()
-        except FormError as exc:
-            print("Error:", exc)
-            return 1
-    print(f"Created admin {user.email} (id={user.id})")
+        for line in users.sync_seed_users(db, rows):
+            print(line)
+        db.commit()
     return 0
 
 
@@ -93,11 +86,9 @@ def main(argv: list[str] | None = None) -> int:
     configure_logging()
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("create-admin", help="Create an administrator account")
-    p.add_argument("--name", required=True)
-    p.add_argument("--email", required=True)
-    p.add_argument("--password", help="Omit to be prompted")
-    p.set_defaults(func=create_admin)
+    sub.add_parser("seed-users", help="Create/update logins from SEED_USERS in .env").set_defaults(
+        func=seed_users
+    )
     sub.add_parser("init-db", help="Create database tables").set_defaults(func=init_database)
     sub.add_parser("seed-demo", help="Insert sample data").set_defaults(func=seed_demo)
     sub.add_parser("run-warranty-job", help="Create warranty notifications now").set_defaults(

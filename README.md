@@ -15,7 +15,7 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 python -c "import secrets; print(secrets.token_urlsafe(48))"                               # SECRET_KEY
 cd frontend && npm ci && npm run build && cd ..
 uv run python -m app.cli init-db           # creates the tables (safe to re-run)
-uv run python -m app.cli create-admin --name "Admin" --email you@company.com
+uv run python -m app.cli seed-users        # logins come from SEED_USERS in .env (no sign-up in the app)
 uv run python -m app.cli seed-demo         # optional sample data
 uv run uvicorn app.main:app --reload
 ```
@@ -28,6 +28,7 @@ Lint: `uv run ruff check .`
 | Variable | Purpose |
 |---|---|
 | `DATABASE_URL` | Postgres URL. On Vercel use the Neon **pooled** connection string. |
+| `SEED_USERS` | `Name\|email\|password,...` logins; `seed-users` creates/updates them (re-run after editing). |
 | `SECRET_KEY` | Signs the session cookie. |
 | `FIELD_ENCRYPTION_KEY` | Fernet key for stored "last password" values. |
 | `ENV` | `dev` or `prod`. `prod` refuses to start with an empty `ALLOWED_IPS`. |
@@ -46,7 +47,7 @@ Lint: `uv run ruff check .`
    and the first admin from your machine:
    ```bash
    uv run python -m app.cli init-db
-   uv run python -m app.cli create-admin --name "Admin" --email you@company.com
+   uv run python -m app.cli seed-users        # logins come from SEED_USERS in .env (no sign-up in the app)
    ```
    Tables are created with `create_all`: it adds missing tables but never alters existing ones, so schema
    changes later mean editing the table by hand (or dropping and recreating while the data is disposable).

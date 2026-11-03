@@ -92,17 +92,6 @@ class LoginForm(FormModel):
     password: str
 
 
-class UserCreateForm(FormModel):
-    name: str = Field(max_length=120)
-    email: str
-    password: str = Field(min_length=8, max_length=128)
-
-    @field_validator("email")
-    @classmethod
-    def _email(cls, v):
-        return clean_email(v)
-
-
 class PasswordResetForm(FormModel):
     password: str = Field(min_length=8, max_length=128)
 

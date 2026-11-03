@@ -1,4 +1,4 @@
-.PHONY: install dev build-css init-db test lint create-admin db
+.PHONY: install dev build-css init-db test lint db
 
 install:
 	uv sync
@@ -23,5 +23,5 @@ lint:
 	uv run ruff check .
 
 create-admin:
-	uv run python -m app.cli create-admin --name "$(NAME)" --email "$(EMAIL)"
+	uv run python -m app.cli --name "$(NAME)" --email "$(EMAIL)"
 

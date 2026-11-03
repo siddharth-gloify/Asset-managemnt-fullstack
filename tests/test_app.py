@@ -237,17 +237,12 @@ def test_reveal_password_is_audited(client, db, make_asset):
     assert "Password Revealed" in audit
 
 
-def test_user_limit_and_health(client, db):
+def test_no_signup_and_login_by_username(client, db):
     assert client.get("/healthz").json()["db"] == "up"
-    for i in range(5):
-        r = client.post(
-            "/users/new", data={"name": f"U{i}", "email": f"u{i}@example.com", "password": "longenough1"}
-        )
-        assert r.status_code == 303
-    r = client.post(
-        "/users/new", data={"name": "X", "email": "x@example.com", "password": "longenough1"}
-    )
-    assert r.status_code == 422 and "maximum of 6" in r.text
+    assert client.get("/users/new").status_code in (404, 405)
+    assert client.post("/users/new", data={"name": "X", "email": "x@example.com", "password": "longenough1"}).status_code in (404, 405)
+    c2 = TestClient(app, client=("10.0.0.5", 2), follow_redirects=False)
+    assert c2.post("/login", data={"email": "admin", "password": PASSWORD}).status_code == 303
 
 
 def test_audit_logs_login_logout_profile(client):
