@@ -301,14 +301,28 @@
 <li class="pt-4 pb-1 px-2.5 text-xs uppercase tracking-wide text-muted-foreground-1">{{ title }}</li>
 {%- endmacro %}
 
-{# ---------- theme toggle (docs/preline/dark-mode.html) ---------- #}
+{# ---------- theme toggle (docs/preline/dark-mode.html, Theme switch) ----------
+   Official checkbox pattern (data-hs-theme-switch + peer), styled as a day/night switch.
+   Decorations react to the checkbox through group-has-[:checked]. #}
 {% macro theme_toggle() -%}
-<button type="button" class="hs-dark-mode-active:hidden block hs-dark-mode size-9 inline-flex justify-center items-center rounded-lg bg-layer border border-layer-line text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus" data-hs-theme-click-value="dark" aria-label="Switch to dark mode">
-  <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-</button>
-<button type="button" class="hs-dark-mode-active:block hidden hs-dark-mode size-9 inline-flex justify-center items-center rounded-lg bg-layer border border-layer-line text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus" data-hs-theme-click-value="light" aria-label="Switch to light mode">
-  <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-</button>
+<label for="theme-switch" class="group relative inline-block w-16 h-8 shrink-0 cursor-pointer select-none" title="Toggle light / dark mode">
+  <input data-hs-theme-switch type="checkbox" id="theme-switch" class="peer sr-only" aria-label="Dark mode">
+  <span class="absolute inset-0 overflow-hidden rounded-full bg-sky-300 shadow-inner ring-1 ring-black/5 transition-colors duration-500 ease-in-out group-has-[:checked]:bg-indigo-950 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-focus peer-disabled:opacity-50 peer-disabled:pointer-events-none">
+    <!-- clouds (day) -->
+    <span class="absolute end-2.5 top-3.5 h-2 w-5 rounded-full bg-white/90 transition-all duration-500 ease-in-out group-has-[:checked]:translate-y-8 group-has-[:checked]:opacity-0"></span>
+    <span class="absolute end-1.5 top-2 h-1.5 w-3 rounded-full bg-white/70 transition-all duration-700 ease-in-out group-has-[:checked]:translate-y-8 group-has-[:checked]:opacity-0"></span>
+    <!-- stars (night) -->
+    <span class="absolute start-2 top-2 size-1 rounded-full bg-white opacity-0 scale-0 transition-all duration-500 delay-150 group-has-[:checked]:scale-100 group-has-[:checked]:opacity-100 group-has-[:checked]:animate-pulse"></span>
+    <span class="absolute start-5 top-5 size-0.5 rounded-full bg-white opacity-0 scale-0 transition-all duration-500 delay-300 group-has-[:checked]:scale-100 group-has-[:checked]:opacity-100 group-has-[:checked]:animate-pulse"></span>
+    <span class="absolute start-3.5 bottom-1.5 size-1 rounded-full bg-indigo-200 opacity-0 scale-0 transition-all duration-500 delay-500 group-has-[:checked]:scale-100 group-has-[:checked]:opacity-100"></span>
+    <span class="absolute start-8 top-1.5 size-0.5 rounded-full bg-white opacity-0 scale-0 transition-all duration-500 delay-200 group-has-[:checked]:scale-100 group-has-[:checked]:opacity-100"></span>
+  </span>
+  <!-- knob: sun (day) turns into moon (night) -->
+  <span class="absolute top-1 start-1 flex size-6 items-center justify-center rounded-full bg-amber-300 text-amber-600 shadow-md transition-all duration-500 ease-[cubic-bezier(0.68,-0.3,0.27,1.3)] group-has-[:checked]:translate-x-8 group-has-[:checked]:rotate-[360deg] group-has-[:checked]:bg-slate-200 group-has-[:checked]:text-slate-600 group-active:scale-90">
+    <svg class="absolute size-3.5 transition-all duration-500 ease-in-out group-has-[:checked]:rotate-90 group-has-[:checked]:scale-0 group-has-[:checked]:opacity-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+    <svg class="absolute size-3.5 -rotate-90 scale-0 opacity-0 transition-all duration-500 ease-in-out group-has-[:checked]:rotate-0 group-has-[:checked]:scale-100 group-has-[:checked]:opacity-100" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+  </span>
+</label>
 {%- endmacro %}
 
 {# ---------- dropdown (docs/preline/dropdown.html) ---------- #}
