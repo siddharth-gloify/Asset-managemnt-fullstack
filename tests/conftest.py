@@ -9,8 +9,6 @@ os.environ["DATABASE_URL"] = TEST_DB
 os.environ["SECRET_KEY"] = "test-secret"
 os.environ["FIELD_ENCRYPTION_KEY"] = Fernet.generate_key().decode()
 os.environ["ENV"] = "dev"
-os.environ["ALLOWED_IPS"] = ""
-os.environ["CLIENT_IP_HEADER"] = ""
 os.environ["CRON_SECRET"] = "cron-test"
 
 from datetime import date, timedelta  # noqa: E402
@@ -19,7 +17,6 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import select, text  # noqa: E402
 
-from app.config import get_settings  # noqa: E402
 from app.db import SessionLocal, get_engine, init_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import User  # noqa: E402
@@ -50,7 +47,6 @@ def _clean():
                 "locations, users restart identity cascade"
             )
         )
-    get_settings().allowed_ips = ""
 
 
 @pytest.fixture

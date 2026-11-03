@@ -12,7 +12,7 @@ from app.config import APP_NAME, get_settings
 from app.core.deps import NotAuthenticated
 from app.core.htmx import is_htmx
 from app.core.logging import configure_logging, get_logger
-from app.core.middleware import IPAllowlistMiddleware, RequestContextMiddleware
+from app.core.middleware import RequestContextMiddleware
 from app.core.templating import BASE_DIR, render
 from app.routers import accounts, assets, auth, checkin, checkout, locations, people, system, views
 from app.services.common import NotFound
@@ -53,12 +53,10 @@ def _error_response(request: Request, status: int, message: str | None = None):
 def create_app() -> FastAPI:
     configure_logging()
     settings = get_settings()
-    if settings.is_prod and not settings.allowed_networks:
-        raise RuntimeError("ALLOWED_IPS must be set when ENV=prod (refusing to start).")
 
     app = FastAPI(title=APP_NAME, docs_url=None, redoc_url=None, openapi_url=None)
 
-    # Order: last added is outermost. Request context wraps the allowlist, which wraps sessions.
+    # Order: last added is outermost. Request context wraps sessions.
     app.add_middleware(
         SessionMiddleware,
         secret_key=settings.secret_key,
@@ -67,7 +65,6 @@ def create_app() -> FastAPI:
         https_only=settings.session_https_only,
         max_age=None,
     )
-    app.add_middleware(IPAllowlistMiddleware)
     app.add_middleware(RequestContextMiddleware)
 
     app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")

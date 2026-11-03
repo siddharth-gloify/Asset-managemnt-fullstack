@@ -6,11 +6,9 @@ import uuid
 import structlog
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import HTMLResponse
 
-from app.config import get_settings
 from app.core.logging import get_logger
-from app.core.netutil import client_ip, ip_in, is_loopback
+from app.core.netutil import client_ip
 
 log = get_logger("http")
 
@@ -46,24 +44,3 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             slow=duration_ms > SLOW_REQUEST_MS,
         )
         return response
-
-
-class IPAllowlistMiddleware(BaseHTTPMiddleware):
-    """Application-level IP allowlist (backup to the network/firewall layer)."""
-
-    async def dispatch(self, request: Request, call_next):
-        networks = get_settings().allowed_networks
-        path = request.url.path
-        if networks:
-            peer = request.client.host if request.client else None
-            exempt = (path == "/healthz" and is_loopback(peer)) or path.startswith("/internal/cron/")
-            ip = getattr(request.state, "client_ip", None) or peer
-            if not exempt and not ip_in(ip, networks):
-                log.warning("ip_denied", ip=ip, path=path)
-                rid = getattr(request.state, "request_id", "-")
-                return HTMLResponse(
-                    f"<h1>403 Forbidden</h1><p>Your network is not allowed to access this "
-                    f"application.</p><p><small>Request ID: {rid}</small></p>",
-                    status_code=403,
-                )
-        return await call_next(request)

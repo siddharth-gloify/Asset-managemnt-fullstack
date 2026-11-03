@@ -1,9 +1,8 @@
 """Create .env.vercel (git-ignored) with production values for Vercel.
 
-Reads DATABASE_URL from .env, generates fresh SECRET_KEY / FIELD_ENCRYPTION_KEY / CRON_SECRET, and
-takes the office IP allowlist as an argument. Existing .env.vercel keys are kept unless --force.
+Reads DATABASE_URL from .env, generates fresh SECRET_KEY / FIELD_ENCRYPTION_KEY / CRON_SECRET. Existing .env.vercel keys are kept unless --force.
 
-    python scripts/make_vercel_env.py --allowed-ips 203.0.113.10/32,10.0.0.0/8
+    python scripts/make_vercel_env.py
 """
 
 from __future__ import annotations
@@ -31,7 +30,6 @@ def read_env(path: Path) -> dict[str, str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--allowed-ips", required=True, help="Comma-separated CIDRs")
     parser.add_argument("--timezone", default="Asia/Kolkata")
     parser.add_argument("--force", action="store_true", help="Regenerate secrets even if present")
     args = parser.parse_args()
@@ -47,8 +45,6 @@ def main() -> None:
         "FIELD_ENCRYPTION_KEY": existing.get("FIELD_ENCRYPTION_KEY") or Fernet.generate_key().decode(),
         "CRON_SECRET": existing.get("CRON_SECRET") or secrets.token_urlsafe(32),
         "ENV": "prod",
-        "ALLOWED_IPS": args.allowed_ips,
-        "CLIENT_IP_HEADER": "x-vercel-forwarded-for",
         "SESSION_HTTPS_ONLY": "true",
         "APP_TIMEZONE": args.timezone,
         "LOG_LEVEL": "INFO",

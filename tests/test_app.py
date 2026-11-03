@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 from PIL import Image
 from sqlalchemy import func, select
 
-from app.config import get_settings
 from app.core import deps
 from app.db import SessionLocal
 from app.main import app
@@ -40,14 +39,6 @@ def test_unauthenticated_htmx_gets_hx_redirect():
     c = TestClient(app, follow_redirects=False)
     r = c.get("/assets", headers={"HX-Request": "true"})
     assert r.status_code == 204 and "/login" in r.headers["hx-redirect"]
-
-
-def test_ip_allowlist_denies(admin):
-    get_settings().allowed_ips = "192.168.1.0/24"
-    denied = TestClient(app, client=("10.0.0.5", 1)).get("/login")
-    allowed = TestClient(app, client=("192.168.1.9", 1)).get("/login")
-    assert denied.status_code == 403
-    assert allowed.status_code == 200
 
 
 def test_duplicate_tag_and_serial(client, make_asset):

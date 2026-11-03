@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import ipaddress
 from functools import lru_cache
 from zoneinfo import ZoneInfo
 
@@ -16,11 +15,6 @@ class Settings(BaseSettings):
     database_url: str
     secret_key: str
     field_encryption_key: str
-    allowed_ips: str = ""
-    # Header carrying the real client IP when the platform sets it (Vercel: x-vercel-forwarded-for).
-    client_ip_header: str = ""
-    # Only used when client_ip_header is empty: X-Forwarded-For is honoured from these peers.
-    trusted_proxies: str = ""
     app_timezone: str = "Asia/Kolkata"
     log_level: str = "INFO"
     log_dir: str = ""
@@ -63,22 +57,6 @@ class Settings(BaseSettings):
     def tz(self) -> ZoneInfo:
         return ZoneInfo(self.app_timezone)
 
-    @staticmethod
-    def _networks(raw: str) -> list[ipaddress._BaseNetwork]:
-        nets = []
-        for part in raw.split(","):
-            part = part.strip()
-            if part:
-                nets.append(ipaddress.ip_network(part, strict=False))
-        return nets
-
-    @property
-    def allowed_networks(self):
-        return self._networks(self.allowed_ips)
-
-    @property
-    def trusted_proxy_networks(self):
-        return self._networks(self.trusted_proxies)
 
 
 @lru_cache

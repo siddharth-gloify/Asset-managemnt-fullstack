@@ -31,10 +31,7 @@ Lint: `uv run ruff check .`
 | `SEED_USERS` | `Name\|email\|password,...` logins; `seed-users` creates/updates them (re-run after editing). |
 | `SECRET_KEY` | Signs the session cookie. |
 | `FIELD_ENCRYPTION_KEY` | Fernet key for stored "last password" values. |
-| `ENV` | `dev` or `prod`. `prod` refuses to start with an empty `ALLOWED_IPS`. |
-| `ALLOWED_IPS` | Comma-separated CIDRs allowed to use the app (e.g. `203.0.113.10/32`). |
-| `CLIENT_IP_HEADER` | Set to `x-vercel-forwarded-for` on Vercel so the allowlist sees the real client IP. |
-| `TRUSTED_PROXIES` | Self-hosting only: CIDRs whose `X-Forwarded-For` is trusted. |
+| `ENV` | `dev` or `prod`. |
 | `APP_TIMEZONE` | Display timezone, default `Asia/Kolkata`. |
 | `SESSION_HTTPS_ONLY` | `true` in production (Vercel is HTTPS). |
 | `CRON_SECRET` | Random string; Vercel Cron sends it as a bearer token to the warranty endpoint. |
@@ -51,9 +48,9 @@ Lint: `uv run ruff check .`
    ```
    Tables are created with `create_all`: it adds missing tables but never alters existing ones, so schema
    changes later mean editing the table by hand (or dropping and recreating while the data is disposable).
-3. Generate production settings (fresh secrets, your office IPs) into the git-ignored `.env.vercel`:
+3. Generate production settings (fresh secrets) into the git-ignored `.env.vercel`:
    ```bash
-   uv run python scripts/make_vercel_env.py --allowed-ips 203.0.113.10/32
+   uv run python scripts/make_vercel_env.py
    ```
 4. Link the project and push those variables to Production:
    ```bash
@@ -62,10 +59,7 @@ Lint: `uv run ruff check .`
    ```
 5. `vercel deploy --prod`. The built CSS and vendored JS are committed under `app/static`, so no Node build runs on Vercel
    (re-run `cd frontend && npm run build` after changing templates' Tailwind classes). `index.py` is the entrypoint.
-6. Check `https://<your-domain>/healthz` from an allowed IP, then sign in.
-
-The app refuses to start in production with an empty `ALLOWED_IPS`; if your office IP changes, update that variable
-(`vercel env add ALLOWED_IPS production --force`) and redeploy.
+6. Check `https://<your-domain>/healthz` then sign in.
 
 Back up `FIELD_ENCRYPTION_KEY` separately: without it stored device passwords are unrecoverable.
 
@@ -75,7 +69,6 @@ Back up `FIELD_ENCRYPTION_KEY` separately: without it stored device passwords ar
 - **Photos:** stored (re-encoded, max 1600px) in Postgres and served via the authenticated `/media/{name}` route; max 4 MB because Vercel caps request bodies at 4.5 MB.
 - **Logging:** JSON to stdout only (serverless has no persistent disk); read it with `vercel logs`.
 - **No Docker/nginx/backup script:** use Supabase's backups (daily on paid plans; export manually on the free plan). `docker-compose.yml` is only the local dev database.
-- **IP allowlist:** enforced in the app using Vercel's `x-vercel-forwarded-for`. For a stronger layer, add a Vercel Firewall rule too.
 - Inline "add person / location" in the check-out popup opens an inline panel inside the popup rather than a second modal.
 
 ## Notes
