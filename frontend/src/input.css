@@ -5,6 +5,17 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* @preline/toggle-password: button gets .active while the field is shown as plain text */
+@custom-variant hs-password-active {
+  &.active {
+    @slot;
+  }
+
+  .active & {
+    @slot;
+  }
+}
+
 @source "../node_modules/preline/dist/*.js";
 @source "../../app/templates";
 @source "../../app/static/js/app.js";

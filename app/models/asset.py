@@ -61,7 +61,7 @@ class Asset(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     asset_tag_id: Mapped[str] = mapped_column(String(60))
-    asset_type: Mapped[str] = mapped_column(String(20), default="laptop", server_default="laptop")
+    asset_type: Mapped[str] = mapped_column(String(40), default="laptop", server_default="laptop")
     description: Mapped[str] = mapped_column(String(300))
     status: Mapped[str] = mapped_column(String(20), default=STATUS_AVAILABLE)
     brand: Mapped[str] = mapped_column(String(100))
@@ -72,8 +72,9 @@ class Asset(Base):
     memory: Mapped[str | None] = mapped_column(String(60))
     hard_disk: Mapped[str | None] = mapped_column(String(60))
     processor: Mapped[str | None] = mapped_column(String(120))
-    purchase_date: Mapped[date] = mapped_column(Date)
-    warranty_expiry: Mapped[date] = mapped_column(Date)
+    # Not every device has paperwork on hand; both are optional.
+    purchase_date: Mapped[date | None] = mapped_column(Date)
+    warranty_expiry: Mapped[date | None] = mapped_column(Date)
     photo_name: Mapped[str | None] = mapped_column(String(80))
     photo_mime: Mapped[str | None] = mapped_column(String(30))
     photo_data: Mapped[bytes | None] = deferred(mapped_column(LargeBinary))

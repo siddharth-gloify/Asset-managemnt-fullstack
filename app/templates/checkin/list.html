@@ -8,7 +8,7 @@
 {% endcall %}
 <div class="mb-4">{{ search_box("/checkin", "#select-rows", q, "Search assigned assets or employee…") }}</div>
 <div data-select-table>
-{% call table_card(['Select','Photo','Asset Tag ID','Description','Status','View'], 'select-rows') %}
+{% call table_card(['Select','Photo','Asset Tag ID','Description','Status','Assigned To','Department','OS','Memory','Hard Disk','View'], 'select-rows') %}
   {% include "checkin/_rows.html" %}
 {% endcall %}
 </div>

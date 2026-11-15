@@ -9,7 +9,7 @@
       {{ input('area', 'Area', values, errors, required=True) }}
       {{ input('district', 'District', values, errors, required=True) }}
       {{ input('state', 'State', values, errors, required=True) }}
-      {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric"') }}
+      {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric" maxlength="6"') }}
     </div>
     <div class="flex justify-end gap-2">
       {{ btn('Cancel', 'secondary', size='sm', attrs='data-inline-cancel') }}

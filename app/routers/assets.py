@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import csv
+import io
+
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.core.deps import current_user
@@ -12,6 +15,7 @@ from app.db import get_db
 from app.models import Asset, User
 from app.schemas.common import validate_form
 from app.schemas.forms import AssetForm
+from app.services import asset_types as type_svc
 from app.services import assets as svc
 from app.services.common import FormError
 
@@ -20,7 +24,14 @@ log = get_logger("assets")
 
 FORM_FIELDS = [
     "asset_tag_id", "asset_type", "description", "status", "brand", "model", "serial_number",
-    "os", "os_version", "memory", "hard_disk", "processor", "purchase_date", "warranty_expiry",
+    "os", "os_version", "memory", "hard_disk", "processor", "department", "purchase_date",
+    "warranty_expiry",
+]  # fmt: skip
+
+EXPORT_COLUMNS = [
+    "asset_tag_id", "description", "status", "asset_type", "brand", "model", "serial_number",
+    "os", "os_version", "memory", "hard_disk", "processor", "department", "purchase_date",
+    "warranty_expiry",
 ]  # fmt: skip
 
 
@@ -53,6 +64,7 @@ def view_context(db: Session, asset: Asset) -> dict:
         "user_names": names,
         "last_checkin": last_checkin,
         "has_password": bool(asset.last_password_enc),
+        "asset_type_labels": type_svc.label_map(db),
         **ctx,
     }
 
@@ -72,6 +84,7 @@ def list_assets(
         "q": q,
         "status": status,
         "last_checkins": svc.last_checkins(db, [a.id for a in result.items]),
+        "assignees": svc.current_assignees(db, [a.id for a in result.items]),
         "base_url": "/assets",
         "active": "assets",
     }
@@ -79,6 +92,27 @@ def list_assets(
         return render(request, "assets/_rows.html", ctx)
     ctx["counts"] = svc.status_counts(db)
     return render(request, "assets/list.html", ctx)
+
+
+@router.get("/export")
+def export_assets(
+    q: str = "",
+    status: str = "",
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    rows = svc.export_assets(db, q, status or None)
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow([c.replace("_", " ").title() for c in EXPORT_COLUMNS])
+    for a in rows:
+        writer.writerow([getattr(a, c) if getattr(a, c) is not None else "" for c in EXPORT_COLUMNS])
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=assets.csv"},
+    )
 
 
 def _form_page(request, db, *, asset=None, values=None, errors=None, status=200):
@@ -92,6 +126,8 @@ def _form_page(request, db, *, asset=None, values=None, errors=None, status=200)
             "errors": errors or {},
             "editing": editing,
             "active": "assets" if editing else "add_device",
+            "asset_type_options": type_svc.type_options(db),
+            "departments": svc.distinct_departments(db),
         },
         status=status,
     )

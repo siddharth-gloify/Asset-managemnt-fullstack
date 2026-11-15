@@ -4,6 +4,7 @@
 {% block crumb %}Assets{% endblock %}
 {% block content %}
 {% call page_header("Assets", "Search, view and manage every device.") %}
+  {{ btn('Export CSV', 'secondary', icon_name='scroll-text', href='/assets/export?q=' ~ (q|urlencode) ~ '&status=' ~ (status|urlencode)) }}
   {{ btn('Add Device', 'primary', icon_name='circle-plus', href='/assets/new') }}
 {% endcall %}
 
@@ -23,7 +24,7 @@
   </div>
 </div>
 
-{% call table_card(['Photo','Asset Tag ID','Description','Status','Brand','Model','Serial Number','Memory','Hard Disk','OS','OS Version','Processor','Department','Last Check-In','Location','Purchase Date','Warranty Expiry','Actions'], 'asset-rows') %}
+{% call table_card(['Photo','Asset Tag ID','Description','Status','Assigned To','Brand','Model','Serial Number','Memory','Hard Disk','OS','OS Version','Processor','Department','Last Check-In','Location','Purchase Date','Warranty Expiry','Actions'], 'asset-rows') %}
   {% include "assets/_rows.html" %}
 {% endcall %}
 {% endblock %}

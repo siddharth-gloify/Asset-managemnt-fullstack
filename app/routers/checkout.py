@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
@@ -39,14 +41,16 @@ def checkout_list(
 
 
 def _form_ctx(db, asset, values=None, errors=None):
+    today = date.today().isoformat()
     return {
         "asset": asset,
         "people": svc.all_people(db),
         "locations": svc.all_locations(db),
         "departments": asset_svc.distinct_departments(db),
-        "values": values or {},
+        "values": values or {"checkout_date": today},
         "errors": errors or {},
         "has_password": bool(asset.last_password_enc),
+        "today": today,
     }
 
 

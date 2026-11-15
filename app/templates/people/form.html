@@ -12,7 +12,7 @@
     <div class="grid gap-4 sm:grid-cols-2">
       {{ input('name', 'Name', values, errors, required=True) }}
       {{ input('employee_code', 'Employee ID', values, errors, required=True) }}
-      {{ input('mobile', 'Mobile Number', values, errors, required=True, attrs='inputmode="numeric"', hint='Digits only') }}
+      {{ input('mobile', 'Mobile Number', values, errors, required=True, attrs='inputmode="numeric" maxlength="10"', hint='Exactly 10 digits') }}
       {{ input('email', 'Email Address', values, errors, type='email', required=True) }}
       {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric"') }}
       {% set opts = [] %}{% for l in locations %}{% set _ = opts.append((l.id, l.name)) %}{% endfor %}

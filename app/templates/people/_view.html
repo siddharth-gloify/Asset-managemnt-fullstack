@@ -1,0 +1,18 @@
+{% from "macros/ui.html" import badge, detail, btn, modal_header, modal_body, modal_footer %}
+{{ modal_header(person.name) }}
+{% call modal_body() %}
+  <div class="mt-1">{{ badge('active', 'Active') if person.is_active else badge('inactive', 'Inactive') }}</div>
+  <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    {{ detail('Employee ID', person.employee_code) }}
+    {{ detail('Mobile Number', person.mobile) }}
+    {{ detail('Email Address', person.email) }}
+    {{ detail('Pincode', person.pincode) }}
+    {{ detail('Location', person.location.name if person.location else None) }}
+    {{ detail('Added On', person.created_at|d) }}
+    <div class="col-span-2 sm:col-span-3">{{ detail('Address', person.address) }}</div>
+  </dl>
+{% endcall %}
+{% call modal_footer() %}
+  {{ btn('Edit', 'secondary', icon_name='pencil', href='/people/' ~ person.id ~ '/edit') }}
+  {{ btn('Close', 'primary', attrs='data-hs-overlay="#app-modal"') }}
+{% endcall %}

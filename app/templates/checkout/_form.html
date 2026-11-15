@@ -34,10 +34,11 @@
         {{ location_select(locations, values.get('location_id'), errors) }}
         <div class="mt-1.5">{{ btn('Add new location', 'link', size='sm', icon_name='plus', attrs='hx-get="/locations/inline-form" hx-target="#inline-slot" hx-swap="innerHTML"') }}</div>
       </div>
-      <div class="sm:col-span-2">
+      <div>
         {{ input('department', 'Department', values, errors, required=True, list_id='dept-list', attrs='autocomplete="off"') }}
         <datalist id="dept-list">{% for dep in departments %}<option value="{{ dep }}">{% endfor %}</datalist>
       </div>
+      {{ input('checkout_date', 'Check-Out Date', values, errors, type='date', required=True, attrs='max="' ~ today ~ '"', hint='Backdate this for devices assigned earlier.') }}
       <div class="sm:col-span-2">{{ textarea('notes', 'Check-Out Notes', values, errors, rows=2) }}</div>
     </div>
   </form>

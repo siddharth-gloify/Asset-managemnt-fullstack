@@ -10,9 +10,7 @@ from app.schemas.common import FormModel, clean_email, digits_only
 
 class AssetForm(FormModel):
     asset_tag_id: str = Field(max_length=60)
-    asset_type: Literal["laptop", "desktop", "monitor", "mobile", "tablet", "printer", "network"] = (
-        "laptop"
-    )
+    asset_type: str = Field(default="laptop", max_length=40)
     description: str = Field(max_length=300)
     status: Literal["available", "under_maintenance"] = "available"
     brand: str = Field(max_length=100)
@@ -23,15 +21,17 @@ class AssetForm(FormModel):
     memory: str | None = Field(default=None, max_length=60)
     hard_disk: str | None = Field(default=None, max_length=60)
     processor: str | None = Field(default=None, max_length=120)
-    purchase_date: date
-    warranty_expiry: date
+    department: str | None = Field(default=None, max_length=120)
+    # Not every device on the books has paperwork; both are optional.
+    purchase_date: date | None = None
+    warranty_expiry: date | None = None
     last_password: str | None = Field(default=None, max_length=200)
 
     @field_validator("warranty_expiry")
     @classmethod
     def _warranty_after_purchase(cls, v, info):
         purchase = info.data.get("purchase_date")
-        if purchase and v < purchase:
+        if v and purchase and v < purchase:
             raise ValueError("Warranty expiry cannot be before the purchase date.")
         return v
 
@@ -48,7 +48,7 @@ class PersonForm(FormModel):
     @field_validator("mobile")
     @classmethod
     def _mobile(cls, v):
-        return digits_only(v, "Mobile number", 7, 15)
+        return digits_only(v, "Mobile number", 10, 10)
 
     @field_validator("pincode")
     @classmethod
@@ -73,14 +73,22 @@ class LocationForm(FormModel):
     @field_validator("pincode")
     @classmethod
     def _pincode(cls, v):
-        return digits_only(v, "Pincode", 4, 10)
+        return digits_only(v, "Pincode", 6, 6)
 
 
 class CheckoutForm(FormModel):
     employee_id: int
     location_id: int
     department: str = Field(max_length=120)
+    checkout_date: date | None = None
     notes: str | None = Field(default=None, max_length=1000)
+
+    @field_validator("checkout_date")
+    @classmethod
+    def _not_future(cls, v):
+        if v and v > date.today():
+            raise ValueError("Check-out date cannot be in the future.")
+        return v
 
 
 class CheckinForm(FormModel):

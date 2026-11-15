@@ -14,7 +14,18 @@ from app.core.htmx import is_htmx
 from app.core.logging import configure_logging, get_logger
 from app.core.middleware import RequestContextMiddleware
 from app.core.templating import BASE_DIR, render
-from app.routers import accounts, assets, auth, checkin, checkout, locations, people, system, views
+from app.routers import (
+    accounts,
+    asset_types,
+    assets,
+    auth,
+    checkin,
+    checkout,
+    locations,
+    people,
+    system,
+    views,
+)
 from app.services.common import NotFound
 
 log = get_logger("app")
@@ -73,7 +84,7 @@ def create_app() -> FastAPI:
     def index():
         return RedirectResponse("/dashboard", status_code=303)
 
-    for module in (auth, assets, checkout, checkin, people, locations, system):
+    for module in (auth, assets, asset_types, checkout, checkin, people, locations, system):
         app.include_router(module.router)
     for r in (
         views.dashboard_router,

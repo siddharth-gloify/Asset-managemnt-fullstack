@@ -16,3 +16,9 @@
   {{ select('location_id', 'Location', opts, selected, errors, required=True, placeholder='Select location…') }}
 </div>
 {%- endmacro %}
+
+{% macro asset_type_select(options, selected, errors) -%}
+<div id="asset-type-select-wrap">
+  {{ select('asset_type', 'Asset Type', options, selected, errors, required=True, placeholder='') }}
+</div>
+{%- endmacro %}

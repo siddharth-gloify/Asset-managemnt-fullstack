@@ -15,6 +15,7 @@ from app.models.asset import (
     STATUS_RETIRED,
 )
 from app.schemas.forms import AssetForm
+from app.services import asset_types as type_svc
 from app.services import audit
 from app.services.common import FormError, NotFound, Page, escape_like, now_utc, paginate
 from app.services.notifications import notify
@@ -22,7 +23,8 @@ from app.services.photos import process_photo
 
 DIFF_FIELDS = [
     "asset_tag_id", "asset_type", "description", "brand", "model", "serial_number", "os",
-    "os_version", "memory", "hard_disk", "processor", "purchase_date", "warranty_expiry",
+    "os_version", "memory", "hard_disk", "processor", "department", "purchase_date",
+    "warranty_expiry",
 ]  # fmt: skip
 
 
@@ -40,9 +42,7 @@ def _active_filter():
     return Asset.deleted_at.is_(None)
 
 
-def search_assets(
-    db: Session, q: str | None = None, status: str | None = None, page: int = 1
-) -> Page:
+def _search_stmt(q: str | None, status: str | None):
     stmt = select(Asset).where(_active_filter()).order_by(Asset.created_at.desc(), Asset.id.desc())
     if status in ASSET_STATUSES:
         stmt = stmt.where(Asset.status == status)
@@ -61,7 +61,30 @@ def search_assets(
             | func.replace(Asset.status, "_", " ").ilike(like, escape="\\")
             | Asset.id.in_(by_employee)
         )
-    return paginate(db, stmt, page)
+    return stmt
+
+
+def search_assets(
+    db: Session, q: str | None = None, status: str | None = None, page: int = 1
+) -> Page:
+    return paginate(db, _search_stmt(q, status), page)
+
+
+def export_assets(db: Session, q: str | None = None, status: str | None = None) -> list[Asset]:
+    """All matching assets, unpaginated, for CSV export."""
+    return list(db.scalars(_search_stmt(q, status)))
+
+
+def current_assignees(db: Session, asset_ids: list[int]) -> dict[int, str]:
+    """Current assignee name for each still-checked-out asset id."""
+    if not asset_ids:
+        return {}
+    rows = db.execute(
+        select(AssetAssignment.asset_id, Employee.name)
+        .join(Employee, Employee.id == AssetAssignment.employee_id)
+        .where(AssetAssignment.asset_id.in_(asset_ids), AssetAssignment.checkin_at.is_(None))
+    ).all()
+    return dict(rows)
 
 
 def status_counts(db: Session) -> dict[str, int]:
@@ -138,6 +161,8 @@ def _check_duplicates(db: Session, form: AssetForm, exclude_id: int | None = Non
             stmt = stmt.where(Asset.id != exclude_id)
         if db.scalar(stmt) is not None:
             errors[field_name] = message
+    if not type_svc.is_valid_key(db, form.asset_type):
+        errors["asset_type"] = "Select a valid asset type."
     if errors:
         raise FormError(errors)
 

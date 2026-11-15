@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from datetime import date, datetime
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.config import get_settings
 from app.models import Asset, AssetAssignment, Employee, Location, User
 from app.models.asset import STATUS_AVAILABLE, STATUS_CHECKED_OUT
 from app.schemas.forms import CheckinForm, CheckoutForm
@@ -11,6 +14,18 @@ from app.services import audit
 from app.services.assets import current_assignment, get_asset
 from app.services.common import FormError, now_utc
 from app.services.notifications import notify
+
+
+def _checkout_timestamp(checkout_date: date | None) -> datetime:
+    now = now_utc()
+    if not checkout_date:
+        return now
+    # Keep the current time-of-day, just move the calendar date (for backdating old assignments).
+    local_now = now.astimezone(get_settings().tz)
+    backdated = local_now.replace(
+        year=checkout_date.year, month=checkout_date.month, day=checkout_date.day
+    )
+    return backdated.astimezone(now.tzinfo)
 
 
 def checkout(db: Session, user: User, asset_id: int, form: CheckoutForm) -> AssetAssignment:
@@ -34,7 +49,7 @@ def checkout(db: Session, user: User, asset_id: int, form: CheckoutForm) -> Asse
         employee_id=employee.id,
         location_id=location.id,
         department=form.department,
-        checkout_at=now_utc(),
+        checkout_at=_checkout_timestamp(form.checkout_date),
         checkout_notes=form.notes,
         checked_out_by=user.id,
     )

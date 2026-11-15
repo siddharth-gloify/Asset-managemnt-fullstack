@@ -8,7 +8,12 @@
   <td class="{{ td }}">{{ l.district }}</td>
   <td class="{{ td }}">{{ l.state }}</td>
   <td class="{{ td }}">{{ l.pincode }}</td>
-  <td class="{{ td }}">{{ btn('Edit', 'link', icon_name='pencil', href='/locations/' ~ l.id ~ '/edit') }}</td>
+  <td class="{{ td }}">
+    <span class="inline-flex items-center gap-x-3">
+      {{ btn('View', 'link', icon_name='eye', attrs='hx-get="/locations/' ~ l.id ~ '" hx-target="#modal-body"') }}
+      {{ btn('Edit', 'link', icon_name='pencil', href='/locations/' ~ l.id ~ '/edit') }}
+    </span>
+  </td>
 </tr>
 {% else %}
 {{ empty_row(8, "No matching records found." if q else "No locations added yet.") }}

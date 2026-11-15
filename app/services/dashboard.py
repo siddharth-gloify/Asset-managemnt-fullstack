@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.models import Asset, AssetAssignment, Employee, Location
-from app.models.asset import ASSET_STATUSES, ASSET_TYPE_LABELS
+from app.models.asset import ASSET_STATUSES
+from app.services import asset_types as type_svc
 from app.services import assets as asset_svc
 from app.services import audit as audit_svc
 from app.services import warranty as warranty_svc
@@ -40,6 +41,7 @@ def build_dashboard(db: Session) -> dict:
     back = _daily_counts(db, AssetAssignment.checkin_at, start, tz)
 
     expiring = warranty_svc.nearby_expiry(db)
+    type_labels = type_svc.label_map(db)
 
     return {
         "counts": counts,
@@ -55,7 +57,7 @@ def build_dashboard(db: Session) -> dict:
                 "series": [counts[s] for s in ASSET_STATUSES],
             },
             "types": {
-                "labels": [ASSET_TYPE_LABELS.get(t, t) for t in by_type],
+                "labels": [type_labels.get(t, t) for t in by_type],
                 "series": list(by_type.values()),
             },
             "trend": {

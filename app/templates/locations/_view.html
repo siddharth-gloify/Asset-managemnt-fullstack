@@ -1,0 +1,17 @@
+{% from "macros/ui.html" import detail, btn, modal_header, modal_body, modal_footer %}
+{{ modal_header(location.name) }}
+{% call modal_body() %}
+  <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    {{ detail('Floor', location.floor) }}
+    {{ detail('Building', location.building_name) }}
+    {{ detail('Area', location.area) }}
+    {{ detail('District', location.district) }}
+    {{ detail('State', location.state) }}
+    {{ detail('Pincode', location.pincode) }}
+    {{ detail('Added On', location.created_at|d) }}
+  </dl>
+{% endcall %}
+{% call modal_footer() %}
+  {{ btn('Edit', 'secondary', icon_name='pencil', href='/locations/' ~ location.id ~ '/edit') }}
+  {{ btn('Close', 'primary', attrs='data-hs-overlay="#app-modal"') }}
+{% endcall %}

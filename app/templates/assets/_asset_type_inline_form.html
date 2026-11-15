@@ -1,0 +1,11 @@
+{% from "macros/ui.html" import input, form_error, btn, card %}
+<form hx-post="/asset-types/inline" hx-target="#asset-type-select-wrap" hx-swap="outerHTML">
+  {% call card('Add new asset type', cls='bg-surface', body_cls='p-4 space-y-3') %}
+    {{ form_error(errors) }}
+    {{ input('label', 'Type Name', values, errors, required=True) }}
+    <div class="flex justify-end gap-2">
+      {{ btn('Cancel', 'secondary', size='sm', attrs='data-inline-cancel') }}
+      {{ btn('Save type', 'primary', type='submit', size='sm') }}
+    </div>
+  {% endcall %}
+</form>

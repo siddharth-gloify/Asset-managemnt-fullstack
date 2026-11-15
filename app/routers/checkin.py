@@ -34,6 +34,7 @@ def checkin_list(
         "base_url": "/checkin",
         "active": "checkin",
         "last_checkins": {},
+        "assignees": asset_svc.current_assignees(db, [a.id for a in result.items]),
     }
     return render(request, "checkin/_rows.html" if is_htmx(request) else "checkin/list.html", ctx)
 

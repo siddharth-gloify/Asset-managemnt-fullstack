@@ -16,7 +16,7 @@
       {{ input('area', 'Area', values, errors, required=True) }}
       {{ input('district', 'District', values, errors, required=True) }}
       {{ input('state', 'State', values, errors, required=True) }}
-      {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric"', hint='Digits only') }}
+      {{ input('pincode', 'Pincode', values, errors, required=True, attrs='inputmode="numeric" maxlength="6"', hint='Exactly 6 digits') }}
     </div>
     <div class="flex justify-end gap-2 pt-4 border-t border-card-divider">
       {{ btn('Cancel', 'secondary', href='/locations') }}

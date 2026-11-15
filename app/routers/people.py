@@ -79,6 +79,14 @@ async def create(
     return _form_page(request, db, values=dict(data), errors=errors, status=422)
 
 
+@router.get("/{person_id:int}")
+def view(
+    person_id: int, request: Request, user: User = Depends(current_user), db: Session = Depends(get_db)
+):
+    person = svc.get_person(db, person_id)
+    return render(request, "people/_view.html", {"person": person})
+
+
 @router.get("/{person_id:int}/edit")
 def edit_form(
     person_id: int, request: Request, user: User = Depends(current_user), db: Session = Depends(get_db)

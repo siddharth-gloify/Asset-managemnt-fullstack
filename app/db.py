@@ -33,11 +33,31 @@ def get_sessionmaker() -> sessionmaker[Session]:
     return sessionmaker(bind=get_engine(), expire_on_commit=False)
 
 
+def _migrate_schema() -> None:
+    """Idempotent ALTERs for columns `create_all` can't change on a table that already exists."""
+    from sqlalchemy import text
+
+    with get_engine().begin() as conn:
+        conn.execute(text("ALTER TABLE assets ALTER COLUMN purchase_date DROP NOT NULL"))
+        conn.execute(text("ALTER TABLE assets ALTER COLUMN warranty_expiry DROP NOT NULL"))
+        conn.execute(text("ALTER TABLE assets ALTER COLUMN asset_type TYPE VARCHAR(40)"))
+
+
 def init_db() -> None:
-    """Create any missing tables (safe to run repeatedly; never alters existing tables)."""
+    """Create any missing tables, apply pending column migrations, and seed defaults.
+
+    Safe to run repeatedly: every step here is a no-op when already applied.
+    """
     import app.models  # noqa: F401  (register models on Base.metadata)
 
     Base.metadata.create_all(get_engine())
+    _migrate_schema()
+
+    from app.services.asset_types import seed_defaults
+
+    with SessionLocal() as db:
+        seed_defaults(db)
+        db.commit()
 
 
 def SessionLocal() -> Session:

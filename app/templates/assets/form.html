@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% from "macros/ui.html" import input, select, file_input, form_error, page_header, btn, card, detail %}
+{% from "macros/ui.html" import input, select, password_input, file_input, form_error, page_header, btn, card, detail %}
+{% from "macros/selects.html" import asset_type_select %}
 {% block title %}{{ 'Edit Device' if editing else 'Add Device' }}{% endblock %}
 {% block crumb %}{{ 'Edit device' if editing else 'Add device' }}{% endblock %}
 {% block content %}
@@ -12,7 +13,10 @@
     {{ form_error(errors) }}
     <div class="grid gap-4 md:grid-cols-3">
       {{ input('asset_tag_id', 'Asset Tag ID', values, errors, required=True) }}
-      {{ select('asset_type', 'Asset Type', asset_type_options, values.get('asset_type'), errors, placeholder='') }}
+      <div>
+        {{ asset_type_select(asset_type_options, values.get('asset_type'), errors) }}
+        <div class="mt-1.5">{{ btn('Add new type', 'link', size='sm', icon_name='plus', attrs='hx-get="/asset-types/inline-form" hx-target="#inline-slot" hx-swap="innerHTML"') }}</div>
+      </div>
       {% if editing %}
         {{ detail('Status', status_labels[asset.status]) }}
       {% else %}
@@ -27,11 +31,12 @@
       {{ input('processor', 'Processor', values, errors) }}
       {{ input('memory', 'Memory', values, errors, hint='e.g. 16 GB') }}
       {{ input('hard_disk', 'Hard Disk', values, errors, hint='e.g. 512 GB SSD') }}
+      {{ input('department', 'Department', values, errors, list_id='dept-list', attrs='autocomplete="off"') }}
+      <datalist id="dept-list">{% for dep in departments %}<option value="{{ dep }}">{% endfor %}</datalist>
+      {{ input('purchase_date', 'Purchase Date', values, errors, type='date', hint='Leave blank if unknown.') }}
+      {{ input('warranty_expiry', 'Warranty Expiry', values, errors, type='date', hint='Leave blank if unknown.') }}
       <div class="hidden md:block"></div>
-      {{ input('purchase_date', 'Purchase Date', values, errors, type='date', required=True) }}
-      {{ input('warranty_expiry', 'Warranty Expiry', values, errors, type='date', required=True) }}
-      <div class="hidden md:block"></div>
-      {{ input('last_password', 'Last Password', {}, errors, type='password', attrs='autocomplete="new-password"', hint=('Leave blank to keep the stored password. Stored encrypted.' if editing and asset.last_password_enc else 'Stored encrypted; masked in the UI.')) }}
+      {{ password_input('last_password', 'Last Password', {}, errors, attrs='autocomplete="new-password"', hint=('Leave blank to keep the stored password. Stored encrypted.' if editing and asset.last_password_enc else 'Stored encrypted; masked in the UI.')) }}
       <div class="md:col-span-2">
         {{ file_input('photo', 'Asset Photo', errors, accept='.jpg,.jpeg,.png,image/jpeg,image/png', hint='JPG, JPEG or PNG, up to 4 MB.' ~ (' Uploading replaces the current photo.' if editing and asset.photo_name else '')) }}
       </div>
@@ -42,4 +47,5 @@
     </div>
   {% endcall %}
 </form>
+<div id="inline-slot" class="max-w-5xl mt-4"></div>
 {% endblock %}
