@@ -15,3 +15,6 @@ Makefile
 .ruff_cache
 BRD.md
 asset-management-symbol
+brag-output
+.agents
+*.pdf
