@@ -24,7 +24,7 @@
   </div>
 </div>
 
-{% call table_card(['Photo','Asset Tag ID','Description','Status','Assigned To','Brand','Model','Serial Number','Memory','Hard Disk','OS','OS Version','Processor','Department','Last Check-In','Location','Purchase Date','Warranty Expiry','Actions'], 'asset-rows') %}
+{% call table_card(['Photo','Asset Tag ID','Description','Status','Assigned To','Brand','Model','Serial Number','Memory','Hard Disk','OS','OS Version','Processor','Department','Last Check-In','Location','Purchase Date','Warranty Expiry','Actions'], 'asset-rows', sticky_last=True) %}
   {% include "assets/_rows.html" %}
 {% endcall %}
 {% endblock %}

@@ -172,3 +172,12 @@ def test_people_and_locations_have_view_detail(client, person_and_location):
 
     location_view = client.get(f"/locations/{loc.id}").text
     assert loc.building_name in location_view and loc.pincode in location_view
+
+
+# 13. The assets table's View/Edit column stays on screen (sticky) instead of requiring a long scroll.
+def test_assets_actions_column_is_sticky(client, make_asset):
+    asset = make_asset()
+    listing = client.get("/assets").text
+    assert "sticky" in listing and "end-0" in listing
+    assert f'aria-label="View {asset.asset_tag_id}"' in listing
+    assert f'aria-label="Edit {asset.asset_tag_id}"' in listing

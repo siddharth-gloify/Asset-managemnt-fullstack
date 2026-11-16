@@ -161,14 +161,14 @@
 
 {# ---------- tables (docs/preline/tables.html, default table in a card) ---------- #}
 {% set TD = 'px-5 py-3 whitespace-nowrap text-sm text-foreground' %}
-{% macro table_card(headers, tbody_id='') -%}
+{% macro table_card(headers, tbody_id='', sticky_last=False) -%}
 <div class="flex flex-col bg-card border border-card-line shadow-2xs rounded-xl overflow-hidden">
   <div class="min-w-full">
     <div class="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-track]:bg-scrollbar-track [&::-webkit-scrollbar-thumb]:bg-scrollbar-thumb">
       <table class="min-w-full divide-y divide-table-line">
         <thead>
           <tr>
-            {% for h in headers %}<th scope="col" class="px-5 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase whitespace-nowrap">{{ h }}</th>{% endfor %}
+            {% for h in headers %}<th scope="col" class="px-5 py-3 text-start text-xs font-medium text-muted-foreground-1 uppercase whitespace-nowrap{% if sticky_last and loop.last %} sticky end-0 bg-card shadow-[-6px_0_6px_-6px_rgba(0,0,0,0.12)]{% endif %}">{{ h }}</th>{% endfor %}
           </tr>
         </thead>
         <tbody {% if tbody_id %}id="{{ tbody_id }}"{% endif %} class="divide-y divide-table-line">{{ caller() }}</tbody>

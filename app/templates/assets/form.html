@@ -8,9 +8,10 @@
   {{ btn('Back to Assets', 'secondary', icon_name='chevron-left', href='/assets') }}
 {% endcall %}
 
-<form method="post" enctype="multipart/form-data" class="max-w-5xl">
-  {% call card(body_cls='p-4 md:p-6 space-y-6') %}
-    {{ form_error(errors) }}
+<form method="post" enctype="multipart/form-data" class="max-w-5xl space-y-5">
+  {{ form_error(errors) }}
+
+  {% call card(title='Device Identity', subtitle='Tag, type and the basics that show up on every list.', body_cls='p-4 md:p-6 space-y-4') %}
     <div class="grid gap-4 md:grid-cols-3">
       {{ input('asset_tag_id', 'Asset Tag ID', values, errors, required=True) }}
       <div>
@@ -26,26 +27,41 @@
       {{ input('brand', 'Brand', values, errors, required=True) }}
       {{ input('model', 'Model', values, errors, required=True) }}
       {{ input('serial_number', 'Serial No', values, errors, required=True) }}
+    </div>
+  {% endcall %}
+
+  {% call card(title='Specifications', subtitle='Device configuration and the owning department.', body_cls='p-4 md:p-6 space-y-4') %}
+    <div class="grid gap-4 md:grid-cols-3">
       {{ input('os', 'OS', values, errors) }}
       {{ input('os_version', 'OS Version', values, errors) }}
       {{ input('processor', 'Processor', values, errors) }}
       {{ input('memory', 'Memory', values, errors, hint='e.g. 16 GB') }}
       {{ input('hard_disk', 'Hard Disk', values, errors, hint='e.g. 512 GB SSD') }}
-      {{ input('department', 'Department', values, errors, list_id='dept-list', attrs='autocomplete="off"') }}
-      <datalist id="dept-list">{% for dep in departments %}<option value="{{ dep }}">{% endfor %}</datalist>
-      {{ input('purchase_date', 'Purchase Date', values, errors, type='date', hint='Leave blank if unknown.') }}
-      {{ input('warranty_expiry', 'Warranty Expiry', values, errors, type='date', hint='Leave blank if unknown.') }}
-      <div class="hidden md:block"></div>
-      {{ password_input('last_password', 'Last Password', {}, errors, attrs='autocomplete="new-password"', hint=('Leave blank to keep the stored password. Stored encrypted.' if editing and asset.last_password_enc else 'Stored encrypted; masked in the UI.')) }}
-      <div class="md:col-span-2">
-        {{ file_input('photo', 'Asset Photo', errors, accept='.jpg,.jpeg,.png,image/jpeg,image/png', hint='JPG, JPEG or PNG, up to 4 MB.' ~ (' Uploading replaces the current photo.' if editing and asset.photo_name else '')) }}
+      <div>
+        {{ input('department', 'Department', values, errors, list_id='dept-list', attrs='autocomplete="off"') }}
+        <datalist id="dept-list">{% for dep in departments %}<option value="{{ dep }}">{% endfor %}</datalist>
       </div>
     </div>
-    <div class="flex justify-end gap-2 pt-4 border-t border-card-divider">
-      {{ btn('Cancel', 'secondary', href='/assets') }}
-      {{ btn('Save changes' if editing else 'Add Device', 'primary', type='submit') }}
+  {% endcall %}
+
+  {% call card(title='Purchase & Warranty', subtitle='Optional — leave blank when the paperwork is not on hand.', body_cls='p-4 md:p-6 space-y-4') %}
+    <div class="grid gap-4 md:grid-cols-3">
+      {{ input('purchase_date', 'Purchase Date', values, errors, type='date', hint='Leave blank if unknown.') }}
+      {{ input('warranty_expiry', 'Warranty Expiry', values, errors, type='date', hint='Leave blank if unknown.') }}
     </div>
   {% endcall %}
+
+  {% call card(title='Security & Photo', body_cls='p-4 md:p-6 space-y-4') %}
+    <div class="grid gap-4 md:grid-cols-2">
+      {{ password_input('last_password', 'Last Password', {}, errors, attrs='autocomplete="new-password"', hint=('Leave blank to keep the stored password. Stored encrypted.' if editing and asset.last_password_enc else 'Stored encrypted; masked in the UI.')) }}
+      {{ file_input('photo', 'Asset Photo', errors, accept='.jpg,.jpeg,.png,image/jpeg,image/png', hint='JPG, JPEG or PNG, up to 4 MB.' ~ (' Uploading replaces the current photo.' if editing and asset.photo_name else '')) }}
+    </div>
+  {% endcall %}
+
+  <div class="flex justify-end gap-2">
+    {{ btn('Cancel', 'secondary', href='/assets') }}
+    {{ btn('Save changes' if editing else 'Add Device', 'primary', type='submit') }}
+  </div>
 </form>
 <div id="inline-slot" class="max-w-5xl mt-4"></div>
 {% endblock %}

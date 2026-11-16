@@ -9,27 +9,36 @@
     </div>
   </div>
 
-  <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-    {{ detail('Brand', asset.brand) }}
-    {{ detail('Model', asset.model) }}
-    {{ detail('Serial Number', asset.serial_number) }}
-    {{ detail('Type', asset_type_labels.get(asset.asset_type, asset.asset_type)) }}
-    {{ detail('OS', asset.os) }}
-    {{ detail('OS Version', asset.os_version) }}
-    {{ detail('Processor', asset.processor) }}
-    {{ detail('Memory', asset.memory) }}
-    {{ detail('Hard Disk', asset.hard_disk) }}
-    {{ detail('Purchase Date', asset.purchase_date|d) }}
-    {{ detail('Warranty Expiry', asset.warranty_expiry|d) }}
-    {{ detail('Department', asset.department) }}
-    {{ detail('Location', asset.current_location.name if asset.current_location else None) }}
-    {{ detail('Last Check-In Date', last_checkin|d) }}
-    {{ detail('Last Used By', asset.last_used_by) }}
-    <div>
-      <dt class="text-xs uppercase tracking-wide text-muted-foreground-1">Last Password</dt>
-      <dd class="mt-0.5 text-sm">{% include "assets/_password.html" %}</dd>
-    </div>
-  </dl>
+  <section>
+    <h4 class="text-sm font-semibold text-foreground mb-2">Device</h4>
+    <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      {{ detail('Brand', asset.brand) }}
+      {{ detail('Model', asset.model) }}
+      {{ detail('Serial Number', asset.serial_number) }}
+      {{ detail('Type', asset_type_labels.get(asset.asset_type, asset.asset_type)) }}
+      {{ detail('OS', asset.os) }}
+      {{ detail('OS Version', asset.os_version) }}
+      {{ detail('Processor', asset.processor) }}
+      {{ detail('Memory', asset.memory) }}
+      {{ detail('Hard Disk', asset.hard_disk) }}
+    </dl>
+  </section>
+
+  <section>
+    <h4 class="text-sm font-semibold text-foreground mb-2">Dates & Admin</h4>
+    <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      {{ detail('Purchase Date', asset.purchase_date|d) }}
+      {{ detail('Warranty Expiry', asset.warranty_expiry|d) }}
+      {{ detail('Department', asset.department) }}
+      {{ detail('Location', asset.current_location.name if asset.current_location else None) }}
+      {{ detail('Last Check-In Date', last_checkin|d) }}
+      {{ detail('Last Used By', asset.last_used_by) }}
+      <div>
+        <dt class="text-xs uppercase tracking-wide text-muted-foreground-1">Last Password</dt>
+        <dd class="mt-0.5 text-sm">{% include "assets/_password.html" %}</dd>
+      </div>
+    </dl>
+  </section>
 
   {% if assignment %}
   <section>

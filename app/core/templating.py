@@ -80,6 +80,7 @@ templates.env.globals.update(
     admin_nav=ADMIN_NAV,
     td="px-5 py-3 whitespace-nowrap text-sm text-foreground",
     td_strong="px-5 py-3 whitespace-nowrap text-sm font-medium text-foreground",
+    td_actions="px-5 py-3 whitespace-nowrap text-sm text-foreground sticky end-0 bg-card group-hover:bg-muted-hover shadow-[-6px_0_6px_-6px_rgba(0,0,0,0.12)]",
     status_labels=STATUS_LABELS,
     status_badge=STATUS_BADGE,
     asset_statuses=ASSET_STATUSES,
